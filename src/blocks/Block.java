@@ -9,6 +9,6 @@ public abstract class Block {
 	ArrayList<Variables> variables;
 
 	abstract boolean checkValidity ();
-	
+
 
 }

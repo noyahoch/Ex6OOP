@@ -5,8 +5,12 @@ public class Variables {
     String value;
     String type;
 
+    
+
 
     boolean checkValidity(){
-        
+
+
+
     }
 }
