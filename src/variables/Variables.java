@@ -4,5 +4,9 @@ public class Variables {
     String name;
     String value;
     String type;
-    
+
+
+    boolean checkValidity(){
+        
+    }
 }
