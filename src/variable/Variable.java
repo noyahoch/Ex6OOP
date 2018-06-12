@@ -1,7 +1,6 @@
-package variables;
+package variable;
 
 import blocks.Block;
-import com.sun.deploy.security.ValidationState;
 
 import java.util.Set;
 import java.util.regex.*;

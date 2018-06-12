@@ -1,6 +1,5 @@
 package block;
 import variable.Variable;
-import variables.Variable;
 
 import java.util.ArrayList;
 

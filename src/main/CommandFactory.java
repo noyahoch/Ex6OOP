@@ -1,7 +1,7 @@
 package main;
 
 import block.*;
-import variables.*;
+import variable.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ public class CommandFactory {
 
     /**
      * Reads a var declaration and creates Variable objects according to it.
-     * Adds the variables to the variable arraylist.
+     * Adds the variable to the variable arraylist.
      * @param line a line representing a variable declaration
      * @returns true iff succeeded creating variable objects
      */
