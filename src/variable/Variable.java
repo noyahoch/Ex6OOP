@@ -1,6 +1,7 @@
 package variable;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import block.Block;
 =======
 >>>>>>> 553126a346b571d74041dd0d665860c81057912a
@@ -8,6 +9,12 @@ import block.Block;
 
 import block.Block;
 
+=======
+
+
+import block.Block;
+
+>>>>>>> 553126a346b571d74041dd0d665860c81057912a
 import java.util.regex.*;
 
 public class Variable {
