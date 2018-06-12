@@ -1,17 +1,21 @@
 package variable;
 
-import blocks.Block;
+<<<<<<< HEAD
+import block.Block;
+=======
+>>>>>>> 553126a346b571d74041dd0d665860c81057912a
 
-import java.util.Set;
+
+import block.Block;
+
 import java.util.regex.*;
 
 public class Variable {
-	Set types;
-	String name;
-	String type;
-	String value;
-	Block parent;
-	boolean finality;
+	private String name;
+	private String type;
+	private String value;
+	private Block parent;
+	private boolean finality;
 	public static final String VARIABLE_PATTERN_NAME = "[A-Za-z]+.*|_\\S+";
 	private static final String STRING_PATTERN = "\".*\"";
 	private static final String INT_PATTERN = "\\d+";
@@ -41,42 +45,36 @@ public class Variable {
 		BOOLEAN("boolean", BOOLEAN_PATTERN),
 		DOUBLE("double", DOUBLE_PATTERN),
 		CHAR("char", CHAR_PATTERN);
-		String typesPattern;
-		String typesName;
+		String typePattern;
+		String typeName;
 
-		Types(String typesName, String typesPattern) {
-			this.typesName = typesName;
-			this.typesPattern = typesPattern;
+		Types(String typeName, String typePattern) {
+			this.typeName = typeName;
+			this.typePattern = typePattern;
 		}
 
 	}
 
 	boolean checkValidity() {
-		if (!types.contains(this.type)) {
-			return false;
-		}
-
-		Pattern namePattern = Pattern.compile(VARIABLE_PATTERN_NAME);
-		Matcher nameMatcher = namePattern.matcher(name);
-		if (!nameMatcher.lookingAt()) return false; //checks if the name begins with char
-
+		Pattern p = Pattern.compile(VARIABLE_PATTERN_NAME);
+		Matcher m = p.matcher(name);
+		if (!m.lookingAt()) return false; //checks if the name begins with char
 		if (value != null) {
 			for (Types type : Types.values()) {
-				if (type.typesName.equals(type)) {
-					namePattern = Pattern.compile(type.typesPattern);
-					nameMatcher = namePattern.matcher(value);
-					if (!nameMatcher.find()) ;
-					return false;
+				if (type.typeName.equals(this.type)) {
+					p = Pattern.compile(type.typePattern);
+					m = p.matcher(value);
+					return m.find();
 				}
-
 			}
-
+			return true;
 		}
 		return true;
 	}
-}
 
 
+	public void setValue (String value){
+		this.value = value;
+	}
 
-    }
 }

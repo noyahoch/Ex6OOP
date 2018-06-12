@@ -15,13 +15,15 @@ public class CommandFactory {
 
 
     private static final String VAR_TYPE = "(final )?(int|double|String|char|boolean)";
-    private static final String BLOCK_TYPE = "while|if|void";
+    private static final String BLOCK_TYPE = "while |if |void ";
     private static final String END_BLOCK = "}";
-    private static final String RETURN = "return;";
+    private static final String RETURN = "return *;";
     private static final String INVALID_LINE = "INVALID";
-    private static final String VAR_ASSIGN = Variable.VARIABLE_PATTERN_NAME+" *= * .+;";
+    private static final String VAR_ASSIGN = Variable.VARIABLE_PATTERN_NAME+" *= * .+ *;";
+    private static final String METHOD_CALL = Method.VALID_METHOD_NAME+"(.*) *;";
 
-    private static final String[] regexes = new String[]{VAR_TYPE,BLOCK_TYPE,END_BLOCK,RETURN};
+    private static final String[] regexes = new String[]{VAR_TYPE,BLOCK_TYPE,END_BLOCK,RETURN
+                                                        ,VAR_ASSIGN,METHOD_CALL};
     private static Block currentBlock = null;
 
 
@@ -34,12 +36,8 @@ public class CommandFactory {
         for (String line : lines) {
             String reg = identify_line(line);
             switch (reg) {
-                case VAR_TYPE:
-                    createVars(line);
-                    break;
-                case BLOCK_TYPE:
-                    createBlock(line);
-                    break;
+                case VAR_TYPE: createVars(line); break;
+                case BLOCK_TYPE: createBlock(line); break;
                 case END_BLOCK:
                     if (currentBlock != null) {
                         currentBlock = currentBlock.getParent();
@@ -50,11 +48,9 @@ public class CommandFactory {
                         throw new IOException("TOO MANY }");
                     break;
                 case RETURN: continue; break;
-                case VAR_ASSIGN:
-                    checkAssignment(line);
-                    break;
-                default:
-                    throw new IOException("UNRECOGNIZED COMMAND");
+                case VAR_ASSIGN: checkAssignment(line); break;
+                case METHOD_CALL: checkMethodCall(line); break;
+                default: throw new IOException("UNRECOGNIZED COMMAND");
             }
         }
 
