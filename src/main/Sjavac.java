@@ -14,6 +14,7 @@ public class Sjavac {
     private static final int LEGAL_CODE = 0;
     private static final int IOPROMBLEM = 2;
     private static final String IGNORE_LINE = "\\s | [^\\\\]";
+    private static final String validSuffixOnce = "$[;{}]";
 
     /**
      * Creates an Arraylist of String based on the lines in the file.
@@ -32,10 +33,18 @@ public class Sjavac {
             Pattern p = Pattern.compile(IGNORE_LINE);
             Matcher m = p.matcher(curLine);
             if(m.matches())
-                lines.add(curLine.trim()); //Ignores spaces at the beginning and the end of the line
+                continue;
+            else{
+                p = Pattern.compile(validSuffixOnce);
+                m = p.matcher(curLine);
+                if(m.matches())
+                    lines.add(curLine.trim()); //Ignores spaces at the beginning and the end of the line
+                else
+                    throw new IOException("INVALID LINE SUFFIX");
+            }
+
             curLine = buff.readLine();
         }
-
         reader.close();
         buff.close();
         return lines;
@@ -49,11 +58,8 @@ public class Sjavac {
             File pathName = new File(args[DIRECTORY_PLACE]);
             try{
                 ArrayList<String> lines = parseData(pathName);
-                Boolean isValid = CommandFactory.check(lines);
-                if (isValid)
-                    System.out.println(LEGAL_CODE);
-                else
-                    System.out.println(ILLEGAL_CODE);
+                CommandFactory.check(lines);
+                System.out.println(LEGAL_CODE);
             } catch (IOException e) {
                 System.out.println(IOPROMBLEM);
                 System.err.println("INVALID DIRECTORY.");
