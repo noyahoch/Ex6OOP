@@ -1,7 +1,7 @@
 package main;
 
 import block.*;
-import variable.*;
+import variable.Variable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,9 +50,13 @@ public class CommandFactory {
                 case RETURN: continue; break;
                 case VAR_ASSIGN: checkAssignment(line); break;
                 case METHOD_CALL: checkMethodCall(line); break;
+                // TODO if methods can be called before assignment,
+                // TODO they should just be added to a new arraylist here and checked later
                 default: throw new IOException("UNRECOGNIZED COMMAND");
             }
         }
+        //TODO go through all methods and variables and check validity
+        // TODO or check immediately when creating them??
 
     }
 
@@ -76,11 +80,9 @@ public class CommandFactory {
      * @returns true iff succeeded creating variable objects
      */
     private static boolean createVars (String line){
-        boolean succeeded = false;
-        String[] words = line.split(" ");
-        String type = words[0];
-
-        return succeeded;
+        //TODO create multiple var objects according to declaration
+        //TODO recognize if declaration is based on another var
+        //TODO add them to the variables of the current block
     }
 
 
@@ -91,13 +93,20 @@ public class CommandFactory {
      * @returns true iff succeeded creating block objects
      */
     private static boolean createBlock (String line){
-        boolean succeeded = false;
-
-
-        return succeeded;
-
+    //TODO break the line to method and params or conditional and condition
+        // TODO advance currentBlock by one.
+        //TODO make sure method is not declared in another method.
     }
 
+    /**
+     * Reads a line of method calls and checks if the method call is correct and logical.
+     * @return true iff the call is correct and logical.
+     */
+    private static boolean checkMethodCall(){
+        //TODO look through the Arraylist of blocks, if the first word befor ( is a name of a method
+        //TODO send it the object with parameters and call relevant method inside.
+        //TODO make sure a method is called inside a method.
+    }
 
 
 }

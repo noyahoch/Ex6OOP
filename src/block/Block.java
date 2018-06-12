@@ -1,4 +1,5 @@
 package block;
+
 import variable.Variable;
 
 import java.util.ArrayList;
@@ -26,6 +27,11 @@ public abstract class Block {
 	public boolean isMethod(){
 		return this.isMethod;
 	}
+
+	public void addVariable(Variable var){
+		this.variables.add(var);
+	}
+
 
 	/**
  	 * @param name a name of a variable

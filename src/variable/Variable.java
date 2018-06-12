@@ -1,20 +1,6 @@
 package variable;
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-import block.Block;
-=======
->>>>>>> 553126a346b571d74041dd0d665860c81057912a
-
-
 import block.Block;
 
-=======
-
-
-import block.Block;
-
->>>>>>> 553126a346b571d74041dd0d665860c81057912a
 import java.util.regex.*;
 
 public class Variable {
@@ -23,7 +9,7 @@ public class Variable {
 	private String value;
 	private Block parent;
 	private boolean finality;
-	public static final String VARIABLE_PATTERN_NAME = "[A-Za-z]+.*|_\\S+";
+	private static final String VARIABLE_PATTERN_NAME = "[A-Za-z]+.*|_\\S+";
 	private static final String STRING_PATTERN = "\".*\"";
 	private static final String INT_PATTERN = "\\d+";
 	private static final String DOUBLE_PATTERN = "\\d+(\\.\\d+)?";
@@ -80,7 +66,7 @@ public class Variable {
 	}
 
 
-	public void setValue (String value){
+	void setValue (String value){
 		this.value = value;
 	}
 
