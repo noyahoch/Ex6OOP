@@ -17,15 +17,16 @@ public class CommandFactory {
 	ArrayList<String> methodCalls;
 
 
-	private static final String VAR_TYPE = "(final )?(int|double|String|char|boolean)";
+	private static final String VAR_TYPE = "(final )?(int|double|String|char|boolean)+(.+);";
 	private static final String CONDITIONAL = "(if|while)\\(([\\w \\|&]*\\)) *{ *";
 	private static final String END_BLOCK = "}";
 	private static final String RETURN = "return *;";
 	private static final String INVALID_LINE = "INVALID";
-	private static final String VAR_ASSIGN = "(final) ?(int|double|String|char|boolean) +(.+);";
-	private static final String METHOD_CALL = Method.VALID_METHOD_NAME + "\\(([\\w ,]*)\\) *{ *";
-	private static final String METHOD_DEC = "(void )"+METHOD_CALL;
-	private static final String FINALITY = "final"; // todo is this the best way?
+	private static final String VAR_ASSIGN = Variable.VARIABLE_PATTERN_NAME+" * = *"
+											+ Variable.VARIABLE_PATTERN_NAME+ " *; *";
+	private static final String METHOD_CALL = Method.VALID_METHOD_NAME + "\\(([\\w ,]*)\\) *; *";
+	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME
+												+ "\\(([\\w ,]*)\\) *{ *";
 	private static final String[] regexes = new String[]{VAR_TYPE, CONDITIONAL,
 			METHOD_DEC, END_BLOCK, RETURN,VAR_ASSIGN, METHOD_CALL};
 
@@ -41,7 +42,7 @@ public class CommandFactory {
 	 * @param lines
 	 * @return
 	 */
-	 void check(ArrayList<String> lines) throws IOException {
+	 static void check(ArrayList<String> lines) throws IOException {
 		for (String line : lines) {
 			String reg = identify_line(line);
 			switch (reg) {
@@ -73,10 +74,9 @@ public class CommandFactory {
 				default:
 					throw new IOException("UNRECOGNIZED COMMAND");
 			}
-		}
-		//TODO go through all methods and variables and check validity
-		// TODO or check immediately when creating them??
 
+		}
+		 checkMethodCall();
 	}
 
 	/**
@@ -130,6 +130,14 @@ public class CommandFactory {
 			blocks.add(cond);
 		} catch (Exception e){
 			throw new IOException("INVALID IF\WHILE DECLARATION");
+		}
+	}
+
+
+	private static void checkAssignment(String line) throws IOException{
+		try{
+			Variable firstVar = currentBlock.m.group(1);
+			Variable
 		}
 	}
 
@@ -204,7 +212,7 @@ public class CommandFactory {
 
 
 
-
+/*
 
 	private static boolean checkParameters(String[] methodParameters, Block originalMethod) throws Exception {
 		if (methodParameters.length != originalMethod.methods.length)//todo need methods Arraylist?
@@ -216,9 +224,6 @@ public class CommandFactory {
 		}
 		return true;
 	}
+*/
 
-
-	//TODO look through the Arraylist of blocks, if the first word before ( is a name of a method
-        //TODO send it the object with parameters and call relevant method inside.
-        //TODO make sure a method is called inside a method.
-    }
+}

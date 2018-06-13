@@ -1,5 +1,9 @@
 package block;
 
+import variable.Variable;
+
+import java.util.ArrayList;
+
 /**
  * a class representing a while loop or an if statement in a Sjavac file
  */
@@ -12,6 +16,7 @@ public class Conditional extends Block{
         this.condition = condition.trim();
         this.isMethod = false;
         this.parent = parent;
+        this.variables = new ArrayList<Variable>();
     }
 
     /**
@@ -20,11 +25,11 @@ public class Conditional extends Block{
      */
     boolean checkValidity() {
         char lastChar = condition.charAt(condition.length()-1);
-        if (lastChar=='&' ||lastChar=='|' || condition == "");
+        if (lastChar=='&' ||lastChar=='|' || condition == "")
             return false;
         String parts[] = condition.split(BOOLEAN_OP);
         for (String part : parts){
-            String varValue = Block.valueOfVar(part, this);
+            String varValue = this.valueOfVar(part);
             if (varValue != null)
                 part = varValue;
             try {

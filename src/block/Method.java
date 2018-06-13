@@ -44,7 +44,7 @@ public class Method extends Block {
         for (int i = 0; i < params.size(); i++){
             String paramValue;
             //If its a name of a relevant variable, assign its value.
-            paramValue = Block.valueOfVar(givenArgs.get(i), this);
+            paramValue = this.valueOfVar(givenArgs.get(i));
             if (paramValue == null)//If its not a var name assign it.
                 paramValue = givenArgs.get(i);
             params.get(i).setValue(paramValue);

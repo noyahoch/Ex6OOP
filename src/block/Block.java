@@ -39,24 +39,30 @@ public abstract class Block {
 	}
 
 
-	public void addBlock(Block block){ this.blocks.add(block);} //todo Noya added
-
-
 	/**
- 	 * @param name a name of a variable
-	 * @param block a block to start with checking.
-	 * @return the value of variable with the corresponding name if exsists. null otherwise;
+	 * @param name a name of a variable
+	 * @return the variable with the corresponding name if exists; null otherwise.
 	 */
-	public String valueOfVar(String name, Block block){ // todo is the block is necessary ?
-		Block currentBlock = block;
+	public Variable findVar(String name){
+		Block currentBlock = this;
 		while (currentBlock != null) {
 			for (Variable var : currentBlock.getVariables())
 				if (var.getName() == name)
-					return var.getValue();
+					return var;
 			currentBlock = currentBlock.getParent();
 		}
 		return null;
-	 }
-	
+	}
+
+	/**
+ 	 * @param name a name of a variable
+	 * @return the value of variable with the corresponding name if exists; null otherwise.
+	 */
+	public String valueOfVar(String name) { // todo is the block is necessary ?
+		Variable var =findVar(name);
+		if (var!=null)
+			return val.getValue();
+		return null;
+	}
 
 }
