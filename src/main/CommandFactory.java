@@ -100,6 +100,7 @@ public class CommandFactory {
 	 * @returns true iff succeeded creating variable objects
 	 */
 	public static boolean createVars(String line) throws Exception {
+<<<<<<< HEAD
 		finality = m.group(1) != null;// todo check if finality is for all values in the row
 		//m is already matched by the switch in the main method
 		String type = m.group(2);
@@ -110,7 +111,11 @@ public class CommandFactory {
 			; //todo try&catch here?
 
 		}
+=======
+		createVars(line, currentBlock.getVariables());
+>>>>>>> ecacc7313ee1f5905d1dce45f864f09b0c576f4f
 	}
+
 	public static boolean createVars(String line, ArrayList<Variable> toAdd) throws Exception {
 		finality = m.group(1) != null;// todo check if finality is for all values in the row
 		String type = m.group(2);
