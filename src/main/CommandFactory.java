@@ -11,25 +11,23 @@ import java.util.regex.Pattern;
 
 
 public class CommandFactory {
-	ArrayList<Block> blocks;
+	ArrayList<Block> blocks; //TODO - do we really need it? cant we use a list of methods only,
+	//TODO and variables check will be based on cuurentblock and its parents??
 	ArrayList<Variable> vars;
 	ArrayList<String> methodCalls;
 
 
 	private static final String VAR_TYPE = "(final )?(int|double|String|char|boolean)";
-	private static final String BLOCK_TYPE = "while |if |void ";
+	private static final String CONDITIONAL = "(if|while)\\(([\\w \\|&]*\\)) *{ *";
 	private static final String END_BLOCK = "}";
 	private static final String RETURN = "return *;";
 	private static final String INVALID_LINE = "INVALID";
 	private static final String VAR_ASSIGN = "(final) ?(int|double|String|char|boolean) +(.+);";
-	private static final String METHOD_CALL = Method.VALID_METHOD_NAME + "(.*) *;";
+	private static final String METHOD_CALL = Method.VALID_METHOD_NAME + "\\(([\\w ,]*)\\) *{ *";
+	private static final String METHOD_DEC = "(void )"+METHOD_CALL;
 	private static final String FINALITY = "final"; // todo is this the best way?
-	private static final String START_BLOCK = BLOCK_TYPE + "(.*) +\(.*\)\\s*{"//todo can the parentheses
-	// bewithout
-	// space?
-	//todo right regex to condition
-	private static final String[] regexes = new String[]{VAR_TYPE, BLOCK_TYPE, END_BLOCK, RETURN
-			, VAR_ASSIGN, METHOD_CALL};
+	private static final String[] regexes = new String[]{VAR_TYPE, CONDITIONAL,
+			METHOD_DEC, END_BLOCK, RETURN,VAR_ASSIGN, METHOD_CALL};
 
 	private static Block currentBlock = null;
 	Pattern p;
@@ -50,9 +48,11 @@ public class CommandFactory {
 				case VAR_TYPE:
 					createVars(line);
 					break;
-				case BLOCK_TYPE:
-					createBlock(line);
+				case CONDITIONAL:
+					createConditional(line);
 					break;
+				case METHOD_DEC
+					createMethod(line);
 				case END_BLOCK:
 					if (currentBlock != null) {
 						currentBlock = currentBlock.getParent();
@@ -70,8 +70,6 @@ public class CommandFactory {
 				case METHOD_CALL:
 					methodCalls.add(line);
 					break;
-				// TODO if methods can be called before assignment,
-				// TODO they should just be added to a new arraylist here and checked later
 				default:
 					throw new IOException("UNRECOGNIZED COMMAND");
 			}
@@ -81,7 +79,11 @@ public class CommandFactory {
 
 	}
 
-
+	/**
+	 * Goes through the relevant lines type, and returns the type of the line
+	 * @param line a Sjava line
+	 * @return the type of the line.
+	 */
 	private String identify_line(String line) {
 		for (String reg : regexes) {
 			p = Pattern.compile(reg);
@@ -100,20 +102,7 @@ public class CommandFactory {
 	 * @returns true iff succeeded creating variable objects
 	 */
 	public static boolean createVars(String line) throws Exception {
-<<<<<<< HEAD
-		finality = m.group(1) != null;// todo check if finality is for all values in the row
-		//m is already matched by the switch in the main method
-		String type = m.group(2);
-		String[] assignments = m.group(3).split(",");
-		for (String assign : assignments) {
-			assign = assign.trim();
-			currentBlock.addVariable(VariableFactory.variableFactory(finality, type, assign, currentBlock))
-			; //todo try&catch here?
-
-		}
-=======
-		createVars(line, currentBlock.getVariables());
->>>>>>> ecacc7313ee1f5905d1dce45f864f09b0c576f4f
+		return createVars(line, vars);
 	}
 
 	public static boolean createVars(String line, ArrayList<Variable> toAdd) throws Exception {
@@ -121,69 +110,99 @@ public class CommandFactory {
 		String type = m.group(2);
 		String[] assignments = m.group(3).split(",");
 		for (String assign : assignments) {
-			toAdd.add(VariableFactory.variableFactory(finality, type, assign, currentBlock))
-			; //todo try&catch here?
+			toAdd.add(VariableFactory.variableFactory(finality, type, assign, currentBlock)); //todo try&catch here?
 
 		}
 	}
 
-
-	//TODO create multiple var objects according to declaration
-	//TODO recognize if declaration is based on another var
-	//TODO add them to the variables of the current block
+	/**
+	 * Creates a new conditional (if or while) according to the line and checks its validity
+	 * @param line the line to check
+	 * @throws IOException if line is invalid
+	 */
+	private static void createConditional (String line) throws IOException{
+		try{
+			Conditional cond = new Conditional(m.group(2), currentBlock);
+			boolean valid = cond.checkValidity();
+			if (!valid)
+				throw new IOException("INVALID BOOLEAN CONDITION");
+			currentBlock = cond;
+			blocks.add(cond);
+		} catch (Exception e){
+			throw new IOException("INVALID IF\WHILE DECLARATION");
+		}
+	}
 
 
 	/**
-	 * Reads a block declaration and creates Block objects according to it.
+	 * Reads a method declaration and creates Block objects according to it.
 	 * Adds the blocks to the blocks arraylist.
 	 *
-	 * @param line a line representing a blocks declaration
-	 * @returns true iff succeeded creating block objects
+	 * @param line a line representing a method declaration
+	 * @throws IOException if line is invalid
 	 */
-	private static boolean createBlock(String line) {
-		Pattern p = Pattern.compile(START_BLOCK);
-		Matcher m = p.matcher(line);
-		// todo ! check how to know if parameters exists
-		Block newBlock = BlockFactory(m.group(1), m.group(2), m.group(3).split(","));
-		if (newBlock.checkValidity()) {
-			currentBlock.addBlock(newBlock);
-			currentBlock = newBlock;
-			return true;
+	private static void createMethod(String line) throws IOException {
+        try{
+        	if (currentBlock.isMethod())
+        		throw new IOException("DECLARED METHOD WITHIN METHOD");
+			ArrayList<Variable> params = new ArrayList<>();
+			String methodName = m.group(2);
+			for (Block block : block)
+				if (block.getName().equals(methodName))
+					throw new IOException("METHOD OVERLOADING IS NOT SUPPORTED");
+
+			Method createdMethod = new Method(methodName,currentBlock, params);
+			createVars(m.group(3), params);
+			currentBlock = createdMethod;
+			blocks.add(createdMethod);
+			if (!createdMethod.checkValidity())
+				throw new IOException("INVALID METHOD DECLARATION");
+		} catch (Exception e){
+        	throw new IOException("INVALID METHOD DECLARATION");
 		}
-		return false;
 	}
 
-	//TODO break the line to method and params or conditional and condition
-        // TODO advance currentBlock by one.
-        //TODO make sure method is not declared in another method.
 
 
     /**
      * Reads a line of method calls and checks if the method call is correct and logical.
      * @return true iff the call is correct and logical.
      */
-    private static boolean checkMethodCall() throws Exception {// todo check type & parameters type
-	    // TODO: save the methods in an array and after reading the file check if it's legal.
-	    String[] words;
-	    Block corresMethod;
-	    boolean isValid;
+    private static boolean checkMethodCall() throws IOException { // todo check type & parameters type
+	    if (currentBlock == null)
+	    	throw new IOException("CANNOT CALL METHOD GLOBALLY");
+		Block corresMethod;
+	    boolean isValid = true;
+	    p = Pattern.compile(METHOD_CALL);
 	    for (String methodCall : methodCalls) {
-		    words = line.split("(|,|)");
-		    corresMethod = findMethod(words[0]);
+		    m = p.matcher(methodCall);
+	    	corresMethod = findMethod(m.group(1));
 		    if (corresMethod != null)
-			    isValid = corresMethod.checkParamValidity(new ArrayList<String>());
+		    	ArrayList<String> callArgs = new ArrayList<String>(m.group(2).split(","));
+			    isValid = corresMethod.checkParamValidity(callArgs);
 		    else if (corresMethod == null || !isValid)
 			    throw new IOException("INVALID METHOD CALL");
 	    }
     }
-	private static Block findMethod (String curMethod) {
+
+	/**
+	 * Finds a method with the given name inputted.
+	 * @param name the name of the method to search
+	 * @return The method with the name if exists. null otherwise.
+	 */
+	private static Block findMethod (String name) {
 		Block checkedBlock = currentBlock;
-		for (Block block : blocks) {
-			if (block.isMethod() && block.getName().equals(curMethod))
-				return block;
+		while (checkedBlock!=null){
+			for (Block block : blocks)
+				if (block.isMethod() && block.getName().equals(name))
+					return block;
+			checkedBlock = checkedBlock.getParent();
 		}
 		return null;
 	}
+
+
+
 
 
 

@@ -9,7 +9,7 @@ import java.util.regex.*;
  * A class representing a method in a Sjava file.
  */
 public class Method extends Block {
-    public final static String VALID_METHOD_NAME = "[A-Za-z]+[\\w]*";
+    public final static String VALID_METHOD_NAME = "([A-Za-z]+[\\w]*)";
     private final ArrayList<Variable> params;
 
     public Method(String name, Block parent, ArrayList<Variable> params ){

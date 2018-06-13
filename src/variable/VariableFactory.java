@@ -20,7 +20,7 @@ public class VariableFactory {
 			// value of the another value is null
 			if (assignmentValue == null)
 				assignmentValue = m.group(3);
-			newVar = new Variable(m.group(1), type, currentBlock, finality,  m.group(3));
+			newVar = new Variable(m.group(1), type, currentBlock, finality,  assignmentValue);
 		} else {
 			newVar = new Variable(m.group(1), type, currentBlock, finality);
 			}

@@ -8,9 +8,10 @@ public class Conditional extends Block{
     private String condition;
     private final String BOOLEAN_OP = " *&& *| *\\|\\| *";
 
-    Conditional(String condition){
-        this.condition = condition;
+    Conditional(String condition, Block parent){
+        this.condition = condition.trim();
         this.isMethod = false;
+        this.parent = parent;
     }
 
     /**
@@ -19,7 +20,7 @@ public class Conditional extends Block{
      */
     boolean checkValidity() {
         char lastChar = condition.charAt(condition.length()-1);
-        if (lastChar=='&' ||lastChar=='|')
+        if (lastChar=='&' ||lastChar=='|' || condition == "");
             return false;
         String parts[] = condition.split(BOOLEAN_OP);
         for (String part : parts){
