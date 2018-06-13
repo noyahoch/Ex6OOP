@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class VariableFactory {
 	private static final String VARIABLE_ASSIGNMENT_PATTERN = Variable.VARIABLE_PATTERN_NAME
-			+"( *(=) *(\S|\".*\"))?";
+			+"( *(=) *(\\S|\".*\"))?";
 	//todo double with command-factory & is it okay to make all possible
 	private Matcher m;
 

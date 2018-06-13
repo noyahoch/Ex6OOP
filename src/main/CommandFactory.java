@@ -7,7 +7,6 @@ import variable.VariableFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,8 +23,7 @@ public class CommandFactory {
 	private static final String END_BLOCK = "}";
 	private static final String RETURN = "return *;";
 	private static final String INVALID_LINE = "INVALID";
-	private static final String VAR_ASSIGN = Variable.VARIABLE_PATTERN_NAME+" * = *"
-											+ Variable.VARIABLE_PATTERN_NAME+ " *; *";
+	private static final String VAR_ASSIGN = Variable.VARIABLE_PATTERN_NAME+" *= *([\\w\"]+) *; *";
 	private static final String METHOD_CALL = Method.VALID_METHOD_NAME + "\\(([\\w ,]*)\\) *; *";
 	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME
 												+ "\\(([\\w ,]*)\\) *{ *";
@@ -144,8 +142,13 @@ public class CommandFactory {
 	private static void checkAssignment(String line) throws IOException{
 		try{
 			Variable firstVar = currentBlock.findVar(m.group(1));
+			String value;
 			Variable secondVar = currentBlock.findVar(m.group(2));
-			firstVar.setValue(secondVar.getValue());
+			if (secondVar!= null)
+				value = secondVar.getValue();
+			else
+				value = m.group(2);
+			firstVar.setValue(value);
 			if (!firstVar.checkValidity())
 				throw new IOException("MISMATCH");
 		} catch (Exception e) {
@@ -198,7 +201,8 @@ public class CommandFactory {
 		    m = p.matcher(methodCall);
 	    	corresMethod = findMethod(m.group(1));
 		    if (corresMethod != null)
-		    	ArrayList<String> callArgs = new ArrayList(Arrays.asList(m.group(2).split(","));
+		    	ArrayList<String> callArgs =
+						new ArrayList<String>(Arrays.asList(m.group(2).split(","));
 			    isValid = corresMethod.checkParamValidity(callArgs);
 		    else if (corresMethod == null || !isValid)
 			    throw new IOException("INVALID METHOD CALL");
