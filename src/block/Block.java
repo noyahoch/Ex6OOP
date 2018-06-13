@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public abstract class Block {
 	Block parent;
 	ArrayList<Variable> variables;
-	ArrayList<Block> blocks;
+	public ArrayList<Block> blocks;
 
 	boolean isMethod;
 
@@ -43,7 +43,7 @@ public abstract class Block {
 	 * @param block a block to start with checking.
 	 * @return the value of variable with the corresponding name if exsists. null otherwise;
 	 */
-	public static String valueOfVar(String name, Block block){ // todo is the block is necessary ?
+	public String valueOfVar(String name, Block block){ // todo is the block is necessary ?
 		Block currentBlock = block;
 		while (currentBlock != null) {
 			for (Variable var : currentBlock.getVariables())

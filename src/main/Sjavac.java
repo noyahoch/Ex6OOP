@@ -23,7 +23,7 @@ public class Sjavac {
      * @return Array list of Strings representing the lines.
      * @throws IOException in case there was a problem with reading the file.
      */
-    private static ArrayList<String> parseData(File file) throws IOException{
+    private ArrayList<String> parseData(File file) throws IOException{
         ArrayList<String> lines = new ArrayList<>();
         FileReader reader = new FileReader(file);
         BufferedReader buff = new BufferedReader(reader);

@@ -10,7 +10,7 @@ public class VariableFactory {
 	//todo double with command-factory & is it okay to make all possible
 	private Matcher m;
 
-	public static Variable variableFactory(boolean finality, String type, String assign, Block currentBlock) throws Exception {//todo is it ok with the name (vary similer to the class's name
+	public Variable variableFactory(boolean finality, String type, String assign, Block currentBlock) throws Exception {//todo is it ok with the name (vary similer to the class's name
 		Variable newVar;
 		Pattern p = Pattern.compile(VARIABLE_ASSIGNMENT_PATTERN);
 		Matcher m = p.matcher(assign);

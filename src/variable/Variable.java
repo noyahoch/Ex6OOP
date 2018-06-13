@@ -65,7 +65,16 @@ public class Variable {
 		return true;
 	}
 
-
+	public boolean checkValidity (String newVal) {
+		for (Types type : Types.values()) {
+			if (type.typeName.equals(this.type)) {
+				Pattern p = Pattern.compile(type.typePattern);
+				Matcher m = p.matcher(newVal);
+				return m.find();
+			}
+		}
+		return true;
+	}
 	void setValue (String value){
 		this.value = value;
 	}
