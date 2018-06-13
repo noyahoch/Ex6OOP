@@ -6,15 +6,17 @@ import variable.VariableFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 public class CommandFactory {
-	ArrayList<Block> blocks; //TODO - do we really need it? cant we use a list of methods only,
+	static ArrayList<Block> blocks; //TODO - do we really need it? cant we use a list of methods only,
 	//TODO and variables check will be based on cuurentblock and its parents??
-	ArrayList<Variable> vars;
-	ArrayList<String> methodCalls;
+	static ArrayList<Variable> vars;
+	static ArrayList<String> methodCalls;
 
 
 	private static final String VAR_TYPE = "(final )?(int|double|String|char|boolean)+(.+);";
@@ -31,9 +33,9 @@ public class CommandFactory {
 			METHOD_DEC, END_BLOCK, RETURN,VAR_ASSIGN, METHOD_CALL};
 
 	private static Block currentBlock = null;
-	Pattern p;
-	Matcher m;
-	boolean finality;
+	static Pattern p;
+	static Matcher m;
+	static boolean finality;
 
 
 	/**
@@ -52,7 +54,7 @@ public class CommandFactory {
 				case CONDITIONAL:
 					createConditional(line);
 					break;
-				case METHOD_DEC
+				case METHOD_DEC:
 					createMethod(line);
 				case END_BLOCK:
 					if (currentBlock != null) {
@@ -84,7 +86,7 @@ public class CommandFactory {
 	 * @param line a Sjava line
 	 * @return the type of the line.
 	 */
-	private String identify_line(String line) {
+	private static String identify_line(String line) {
 		for (String reg : regexes) {
 			p = Pattern.compile(reg);
 			m = p.matcher(line);
@@ -129,7 +131,7 @@ public class CommandFactory {
 			currentBlock = cond;
 			blocks.add(cond);
 		} catch (Exception e){
-			throw new IOException("INVALID IF\WHILE DECLARATION");
+			throw new IOException("INVALID IF WHILE DECLARATION");
 		}
 	}
 
@@ -196,7 +198,7 @@ public class CommandFactory {
 		    m = p.matcher(methodCall);
 	    	corresMethod = findMethod(m.group(1));
 		    if (corresMethod != null)
-		    	ArrayList<String> callArgs = new ArrayList<String>(m.group(2).split(","));
+		    	ArrayList<String> callArgs = new ArrayList(Arrays.asList(m.group(2).split(","));
 			    isValid = corresMethod.checkParamValidity(callArgs);
 		    else if (corresMethod == null || !isValid)
 			    throw new IOException("INVALID METHOD CALL");

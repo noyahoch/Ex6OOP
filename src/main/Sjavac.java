@@ -23,12 +23,11 @@ public class Sjavac {
      * @return Array list of Strings representing the lines.
      * @throws IOException in case there was a problem with reading the file.
      */
-    private ArrayList<String> parseData(File file) throws IOException{
+    private static ArrayList<String> parseData(File file) throws IOException{
         ArrayList<String> lines = new ArrayList<>();
         FileReader reader = new FileReader(file);
         BufferedReader buff = new BufferedReader(reader);
         String curLine = buff.readLine();
-
         while(curLine != null){
             Pattern p = Pattern.compile(IGNORE_LINE);
             Matcher m = p.matcher(curLine);
@@ -42,7 +41,6 @@ public class Sjavac {
                 else
                     throw new IOException("INVALID LINE SUFFIX");
             }
-
             curLine = buff.readLine();
         }
         reader.close();
