@@ -97,15 +97,9 @@ public class CommandFactory {
 	 * @returns true iff succeeded creating variable objects
 	 */
 	public static boolean createVars(String line) throws Exception {
-		finality = m.group(1) != null;// todo check if finality is for all values in the row
-		String type = m.group(2);
-		String[] assignments = m.group(3).split(",");
-		for (String assign : assignments) {
-			currentBlock.addVariable(VariableFactory.variableFactory(finality, type, assign, currentBlock))
-			; //todo try&catch here?
-
-		}
+		createVars(line, currentBlock.getVariables());
 	}
+
 	public static boolean createVars(String line, ArrayList<Variable> toAdd) throws Exception {
 		finality = m.group(1) != null;// todo check if finality is for all values in the row
 		String type = m.group(2);
