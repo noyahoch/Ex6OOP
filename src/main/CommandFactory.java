@@ -134,10 +134,20 @@ public class CommandFactory {
 	}
 
 
+	/**
+	 * Checks if an assignment line is valid.
+	 * @param line a String representing the assignment.
+	 * @throws IOException if the assignment is invalid.
+	 */
 	private static void checkAssignment(String line) throws IOException{
 		try{
-			Variable firstVar = currentBlock.m.group(1);
-			Variable
+			Variable firstVar = currentBlock.findVar(m.group(1));
+			Variable secondVar = currentBlock.findVar(m.group(2));
+			firstVar.setValue(secondVar.getValue());
+			if (!firstVar.checkValidity())
+				throw new IOException("MISMATCH");
+		} catch (Exception e) {
+			throw new IOException("ILLEGAL ASSIGNMENT");
 		}
 	}
 
