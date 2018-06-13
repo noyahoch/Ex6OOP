@@ -9,7 +9,7 @@ public class Variable {
 	private String value;
 	private Block parent;
 	private boolean finality;
-	public static final String VARIABLE_PATTERN_NAME = "[A-Za-z]+.*|_\\S+";
+	public static final String VARIABLE_PATTERN_NAME = "([A-Za-z]+[\\w]*|_  \\w+)";
 	private static final String STRING_PATTERN = "\".*\"";
 	private static final String INT_PATTERN = "\\d+";
 	private static final String DOUBLE_PATTERN = "\\d+(\\.\\d+)?";
@@ -17,13 +17,14 @@ public class Variable {
 	private static final String BOOLEAN_PATTERN = "true|false|\\d+(\\.\\d+)?";
 
 
-	Variable(String name, String type, Block parent) throws ClassNotFoundException {
+	Variable(String name, String type, Block parent, boolean finality) throws ClassNotFoundException {
 		this.name = name;
 		this.type = type;
 		this.parent = parent;
+		this.finality = finality;
 	}
 
-	Variable(String name, String type, Block parent, String value, boolean finality) throws ClassNotFoundException {
+	Variable(String name, String type, Block parent, boolean finality,  String value) throws ClassNotFoundException {
 		this.name = name;
 		this.type = type;
 		this.parent = parent;

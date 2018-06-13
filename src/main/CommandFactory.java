@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 public class CommandFactory {
 	ArrayList<Block> blocks;
 	ArrayList<Variable> vars;
+	ArrayList<String> methodCalls;
 
 
 	private static final String VAR_TYPE = "(final )?(int|double|String|char|boolean)";
@@ -23,8 +24,10 @@ public class CommandFactory {
 	private static final String VAR_ASSIGN = "(final) ?(int|double|String|char|boolean) +(.+);";
 	private static final String METHOD_CALL = Method.VALID_METHOD_NAME + "(.*) *;";
 	private static final String FINALITY = "final"; // todo is this the best way?
-	private static final String START_BLOCK = BLOCK_TYPE + "(.*) +\(.*\)\\s*{"//todo can the parentheses bewithout
+	private static final String START_BLOCK = BLOCK_TYPE + "(.*) +\(.*\)\\s*{"//todo can the parentheses
+	// bewithout
 	// space?
+	//todo right regex to condition
 	private static final String[] regexes = new String[]{VAR_TYPE, BLOCK_TYPE, END_BLOCK, RETURN
 			, VAR_ASSIGN, METHOD_CALL};
 
@@ -65,7 +68,7 @@ public class CommandFactory {
 					checkAssignment(line);
 					break;
 				case METHOD_CALL:
-					checkMethodCall(line);
+					methodCalls.add(line);
 					break;
 				// TODO if methods can be called before assignment,
 				// TODO they should just be added to a new arraylist here and checked later
@@ -98,9 +101,11 @@ public class CommandFactory {
 	 */
 	public static boolean createVars(String line) throws Exception {
 		finality = m.group(1) != null;// todo check if finality is for all values in the row
+		//m is already matched by the switch in the main method
 		String type = m.group(2);
 		String[] assignments = m.group(3).split(",");
 		for (String assign : assignments) {
+			assign = assign.trim();
 			currentBlock.addVariable(VariableFactory.variableFactory(finality, type, assign, currentBlock))
 			; //todo try&catch here?
 
@@ -143,7 +148,6 @@ public class CommandFactory {
 		return false;
 	}
 
-
 	//TODO break the line to method and params or conditional and condition
         // TODO advance currentBlock by one.
         //TODO make sure method is not declared in another method.
@@ -153,31 +157,28 @@ public class CommandFactory {
      * Reads a line of method calls and checks if the method call is correct and logical.
      * @return true iff the call is correct and logical.
      */
-    private static boolean checkMethodCall(String curMethod) throws Exception {// todo check type & parameters type
-	    //todo ! if method called before defining it ?
-	    String methodName = m.group(1);
-	    String[] methodParametes = m.group(2);
-	    ArrayList<Variable> methodsVariables;
-	    Block originalMethod = findMethod(methodName);
-	    if (originalMethod == null) {
-		    throw new Exception("this method doesn't exists" +
-				    "");
+    private static boolean checkMethodCall() throws Exception {// todo check type & parameters type
+	    // TODO: save the methods in an array and after reading the file check if it's legal.
+	    String[] words;
+	    Block corresMethod;
+	    boolean isValid;
+	    for (String methodCall : methodCalls) {
+		    words = line.split("(|,|)");
+		    corresMethod = findMethod(words[0]);
+		    if (corresMethod != null)
+			    isValid = corresMethod.checkParamValidity(new ArrayList<String>());
+		    else if (corresMethod == null || !isValid)
+			    throw new IOException("INVALID METHOD CALL");
 	    }
-	    return checkParameters (curMethod,  originalMethod);
     }
-
 	private static Block findMethod (String curMethod) {
 		Block checkedBlock = currentBlock;
-		while (checkedBlock != null) {
-			for (Block method: checkedBlock.blocks){
-				if (method.equals(curMethod.getName())&& method.isMethod())//there is no name to blocks
-					return method;
-				}
-				checkedBlock = currentBlock.getParent();
-			}
-			return null; //todo null isnt good
+		for (Block block : blocks) {
+			if (block.isMethod() && block.getName().equals(curMethod))
+				return block;
 		}
-
+		return null;
+	}
 
 
 

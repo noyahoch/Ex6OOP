@@ -8,7 +8,11 @@ import java.util.ArrayList;
 public abstract class Block {
 	Block parent;
 	ArrayList<Variable> variables;
-	public ArrayList<Block> blocks;
+	String name;
+
+	public String getName(){
+		return this.name;
+	}
 
 	boolean isMethod;
 
