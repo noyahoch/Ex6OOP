@@ -9,7 +9,7 @@ public class Variable {
 	private String value;
 	private Block parent;
 	private boolean finality;
-	private static final String VARIABLE_PATTERN_NAME = "[A-Za-z]+.*|_\\S+";
+	public static final String VARIABLE_PATTERN_NAME = "[A-Za-z]+.*|_\\S+";
 	private static final String STRING_PATTERN = "\".*\"";
 	private static final String INT_PATTERN = "\\d+";
 	private static final String DOUBLE_PATTERN = "\\d+(\\.\\d+)?";

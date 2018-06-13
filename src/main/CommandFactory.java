@@ -2,6 +2,7 @@ package main;
 
 import block.*;
 import variable.Variable;
+import variable.VariableFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,12 +20,18 @@ public class CommandFactory {
     private static final String END_BLOCK = "}";
     private static final String RETURN = "return *;";
     private static final String INVALID_LINE = "INVALID";
-    private static final String VAR_ASSIGN = Variable.VARIABLE_PATTERN_NAME+" *= * .+ *;";
+    private static final String VAR_ASSIGN = "(final) ?(int|double|String|char|boolean) +(.+);";
     private static final String METHOD_CALL = Method.VALID_METHOD_NAME+"(.*) *;";
-
+    private static final String FINALITY= "final"; // todo is this the best way?
+	private static final String START_BLOCK = BLOCK_TYPE + "(.*) +\(.*\)\\s*{"//todo can the parentheses bewithout
+	// space?
     private static final String[] regexes = new String[]{VAR_TYPE,BLOCK_TYPE,END_BLOCK,RETURN
                                                         ,VAR_ASSIGN,METHOD_CALL};
+
     private static Block currentBlock = null;
+	Pattern p;
+	Matcher m;
+	boolean finality;
 
 
     /**
@@ -61,9 +68,7 @@ public class CommandFactory {
     }
 
 
-    private static String identify_line(String line){
-        Pattern p;
-        Matcher m;
+    private String identify_line(String line){
         for (String reg : regexes){
             p = Pattern.compile(reg);
             m = p.matcher(line);
@@ -79,11 +84,22 @@ public class CommandFactory {
      * @param line a line representing a variable declaration
      * @returns true iff succeeded creating variable objects
      */
-    private static boolean createVars (String line){
+    private boolean createVars (String line) throws Exception {
+	    finality = m.group(1) != null;// todo check if finality is for all values in the row
+	    String type = m.group(2);
+	    String[] assignments = m.group(3).split(",");
+	    for (String assign : assignments) {
+		    currentBlock.addVariable(VariableFactory.variableFactory(finality, type, assign, currentBlock))
+		    ; //todo try&catch here?
+
+	    }
+    }
+
+
+
         //TODO create multiple var objects according to declaration
         //TODO recognize if declaration is based on another var
         //TODO add them to the variables of the current block
-    }
 
 
     /**
@@ -93,6 +109,15 @@ public class CommandFactory {
      * @returns true iff succeeded creating block objects
      */
     private static boolean createBlock (String line){
+    	Pattern p = Pattern.compile(START_BLOCK);
+    	Matcher m  = p.matcher(line);
+    		Block newBlock = BlockFactory(m.group(1), m.group(2), m.group(3).split(","));
+    		if (newBlock.checkValidity()){currentBlock.addBlock(newBlock); return true;}
+    		return false;
+	    }
+
+
+
     //TODO break the line to method and params or conditional and condition
         // TODO advance currentBlock by one.
         //TODO make sure method is not declared in another method.
@@ -103,7 +128,11 @@ public class CommandFactory {
      * @return true iff the call is correct and logical.
      */
     private static boolean checkMethodCall(){
-        //TODO look through the Arraylist of blocks, if the first word befor ( is a name of a method
+
+
+
+
+        //TODO look through the Arraylist of blocks, if the first word before ( is a name of a method
         //TODO send it the object with parameters and call relevant method inside.
         //TODO make sure a method is called inside a method.
     }
