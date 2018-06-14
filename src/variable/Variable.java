@@ -49,7 +49,7 @@ public class Variable {
 		}
 	}
 
-	boolean checkValidity() {
+	public boolean checkValidity() {
 		Pattern p = Pattern.compile(VARIABLE_PATTERN_NAME);
 		Matcher m = p.matcher(name);
 		if (!m.lookingAt()) return false; //checks if the name begins with char
@@ -86,6 +86,10 @@ public class Variable {
 
 	public boolean getFinality(){
 		return this.finality;
+	}
+
+	public String getName(){
+		return this.name;
 	}
 
 }

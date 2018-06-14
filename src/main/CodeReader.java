@@ -12,12 +12,13 @@ import java.util.regex.Pattern;
 
 
 public class CodeReader {
-	private static ArrayList<Method> methods; //TODO - do we really need it? cant we use a list of methods only,
-	//TODO and variables check will be based on cuurentblock and its parents??
+	private static ArrayList<Method> methods;
 	private static ArrayList<Variable> vars;
 	private static ArrayList<String> methodCalls;
+	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME
+			+ "\\(([\\w ,]*)\\) *\\{ *";
+	private static final String CONDITIONAL = "(if|while)\\(([\\w \\|&]*\\)) *\\{ *";
 	private static final String VAR_TYPE = "(final )?(int|double|String|char|boolean)+(.+);";
-	private static final String BLOCK_DEC = "(void |while *\\(?|if *\\(?)";
 	private static final String END_BLOCK = "}";
 	private static final String RETURN = "return *;";
 	private static final String VAR_ASSIGN = Variable.VARIABLE_PATTERN_NAME+" *= *([\\w\"]+) *; *";
@@ -32,19 +33,11 @@ public class CodeReader {
 	private static Matcher m;
 	private static boolean finality;
 
-	private static CodeReader codeReader = new CodeReader();
-
-	private CodeReader(){};
-
-	public static CodeReader getInstance(){return codeReader;}
-
-
 	/**
 	 * Checks the if the lines in the file are valid.
 	 * @param lines
 	 * @return
 	 */
-
 	 static void checkCode(ArrayList<String> lines) throws Exception {
 		for (String line : lines) {
 			String reg = identify_line(line);
@@ -52,10 +45,11 @@ public class CodeReader {
 				case VAR_TYPE:
 					createVars(line, vars);
 					break;
-				case BLOCK_DEC:
+				case METHOD_DEC:
 
-					//currentBlock = BlockFactory.createBlock(m.group(1), line, currentBlock);
-					if (currentBlock.isMethod()){methods.add((Method) currentBlock);}
+					break;
+				case CONDITIONAL:
+					createConditional();
 					break;
 				case END_BLOCK:
 					if (currentBlock != null) {
@@ -141,8 +135,57 @@ public class CodeReader {
 		}
 	}
 
+	/**
+	 * Creates a new conditional (if or while) according to the line and checks its validity
+	 *
+	 * @throws IOException if line is invalid
+	 */
+	private static Block createConditional() throws IOException {
+		if (currentBlock == null)
+			throw new IOException("CANNOT DECLARE CONDITIONAL IN GLOBAL SCOPE");
+		try {
+			Block cond = new Conditional(m.group(2), currentBlock);
+			boolean valid = cond.checkValidity();
+			if (!valid)
+				throw new IOException("INVALID BOOLEAN CONDITION");
+			return cond;
+		} catch (Exception e) {
+			throw new IOException("INVALID IF WHILE DECLARATION");
+		}
+	}
 
-    /**
+	/**
+	 * Reads a method declaration and creates Block objects according to it.
+	 * Adds the blocks to the blocks arraylist.
+	 *
+	 * @throws IOException if line is invalid
+	 */
+	private static Block createMethod() throws IOException {
+		try {
+			if (currentBlock.isMethod())
+				throw new IOException("DECLARED METHOD WITHIN METHOD");
+			String methodName = m.group(2);
+			for (Method method : methods)
+				if (method.getName().equals(methodName))
+					throw new IOException("METHOD OVERLOADING IS NOT SUPPORTED");
+
+			ArrayList<Variable> params = new ArrayList<>();
+			String[] varDec = m.group(3).split(",");
+			for (String declaration : varDec)
+				CodeReader.createVars(declaration, params);
+
+			Block createdMethod = new Method(methodName, currentBlock, params);
+			if (!createdMethod.checkValidity())
+				throw new IOException("INVALID METHOD DECLARATION");
+			return createdMethod;
+		} catch (Exception e) {
+			throw new IOException("INVALID METHOD DECLARATION");
+		}
+	}
+
+
+
+	/**
      * Reads a line of method calls and checks if the method call is correct and logical.
      * @return true iff the call is correct and logical.
      */
@@ -156,7 +199,7 @@ public class CodeReader {
 		    m = p.matcher(methodCall);
 	    	corresMethod = findMethod(m.group(1));
 		    if (corresMethod != null){
-		    	ArrayList<String> callArgs = new ArrayList<String>(Arrays.asList(m.group(2).split(","));
+		    	ArrayList<String> callArgs = new ArrayList<String>(Arrays.asList(m.group(2).split(",")));
 
 			    isValid = corresMethod.checkParamValidity(callArgs);
 		    }
@@ -181,11 +224,5 @@ public class CodeReader {
 		return null;
 	}
 
-	public Block getCurrentBlock() {
-		return currentBlock;
-	}
 
-	public ArrayList<Method> getMethods() {
-		return methods;
-	}
 }

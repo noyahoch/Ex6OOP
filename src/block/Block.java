@@ -10,7 +10,7 @@ public abstract class Block {
 	ArrayList<Variable> variables;
 	boolean isMethod;
 
-	abstract boolean checkValidity();
+	abstract public boolean checkValidity();
 
 	public void setParent(Block parent){
 		this.parent = parent;
@@ -54,7 +54,7 @@ public abstract class Block {
 	public String valueOfVar(String name) {
 		Variable var = findVar(name);
 		if (var!=null)
-			return val.getValue();
+			return var.getValue();
 		return null;
 	}
 
