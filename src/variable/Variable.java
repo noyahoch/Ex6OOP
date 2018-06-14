@@ -30,6 +30,10 @@ public class Variable {
 
 	}
 
+	public String getValue() {
+		return value;
+	}
+
 	private enum Types {
 		INT("int", INT_PATTERN),
 		STRING("String", STRING_PATTERN),
@@ -72,11 +76,15 @@ public class Variable {
 		}
 		return true;
 	}
-	void setValue (String value){
-		this.value = value;
+	public boolean setValue(String value){
+		if (checkValidity(value)) {
+			this.value = value;
+			return true;
+			}
+			return false;
 	}
 
-	boolean getFinality(){
+	public boolean getFinality(){
 		return this.finality;
 	}
 

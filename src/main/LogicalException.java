@@ -7,7 +7,8 @@ public class LogicalException extends Exception {
 
 	/**
 	 * exception constructor.
+	 * @param s
 	 */
-	LogicalException() {super(ERROR_MESSAGE);}
+	LogicalException(String s) {super(ERROR_MESSAGE);}
 }
 

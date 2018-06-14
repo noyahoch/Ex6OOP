@@ -9,7 +9,7 @@ public class VariableFactory {
 			"*(\\S|\".*\"))?";
 	private Matcher m;
 
-	public Variable createVariable(boolean finality, String type, String assign, Block currentBlock) throws
+	public static Variable createVariable(boolean finality, String type, String assign, Block currentBlock) throws
 			Exception {
 
 		Variable newVar;

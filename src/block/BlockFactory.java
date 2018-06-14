@@ -1,13 +1,14 @@
 package block;
 
-import main.CodeReader;
+import main.CommandFactory;
 import variable.Variable;
+import variable.VariableFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.regex.*;
 
 public class BlockFactory {
+<<<<<<< HEAD
 	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME
 			+ "\\(([\\w ,]*)\\) *{ *";
 	private static final String CONDITIONAL = "(if|while)\\(([\\w \\|&]*\\)) *{ *";
@@ -29,6 +30,24 @@ public class BlockFactory {
 		if(type.contains(METHOD_KEY))
 			return createMethod(blockMatcher.group(2), reader);
 		return createConditional(blockMatcher.group(2), reader);
+=======
+	ArrayList<Variable> parameters;
+<<<<<<< HEAD
+	public Block blockFactory(String type, String[]parameters) throws Exception {
+		if (type.equals("void")){
+			for (String parameter:parameters) {
+				CommandFactory.createVars (parameter);
+=======
+>>>>>>> 7786052641f340bf53e7af120809275032b043bc
+
+	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME
+			+ "\\(([\\w ,]*)\\) *{ *";
+	private static final String CONDITIONAL = "(if|while)\\(([\\w \\|&]*\\)) *{ *";
+
+	public Block createBlock(String type, String line, Block decBlock)  {
+
+
+>>>>>>> f388e8b1c5a2729069444614c7223bb0725c44e9
 	}
 
 
@@ -37,8 +56,12 @@ public class BlockFactory {
 	 * @param line the line to check
 	 * @throws IOException if line is invalid
 	 */
+<<<<<<< HEAD
 	private static Block createConditional (String line, CodeReader reader) throws IOException{
 		Block decBlock = reader.getCurrentBlock();
+=======
+	private static void createConditional (String line, Block decBlock) throws IOException{
+>>>>>>> f388e8b1c5a2729069444614c7223bb0725c44e9
 		if (decBlock == null)
 			throw new IOException("CANNOT DECLARE CONDITIONAL IN GLOBAL SCOPE");
 		try{
