@@ -61,6 +61,7 @@ public class CodeReader {
 					case END_BLOCK:
 						if (currentBlock.getParent() != null) {
 							if (currentBlock.isMethod() && !(lines.get(lines.indexOf(line) - 1).equals(RETURN))) {
+								System.out.println("rwkvjrev");
 								throw new SyntaxException("MISSING RETURN STATEMENT");
 							}
 							currentBlock = currentBlock.getParent();
