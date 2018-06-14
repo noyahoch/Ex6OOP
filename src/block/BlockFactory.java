@@ -9,7 +9,17 @@ import java.util.regex.*;
 
 public class BlockFactory {
 	ArrayList<Variable> parameters;
+<<<<<<< HEAD
 	CodeReader reader;
+=======
+<<<<<<< HEAD
+	public Block blockFactory(String type, String[]parameters) throws Exception {
+		if (type.equals("void")){
+			for (String parameter:parameters) {
+				CommandFactory.createVars (parameter);
+=======
+>>>>>>> 7786052641f340bf53e7af120809275032b043bc
+>>>>>>> b5745ac844185d00b0c09bb03d8f910c27578654
 
 	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME
 			+ "\\(([\\w ,]*)\\) *{ *";

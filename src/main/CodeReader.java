@@ -16,8 +16,6 @@ public class CodeReader {
 	//TODO and variables check will be based on cuurentblock and its parents??
 	static ArrayList<Variable> vars;
 	static ArrayList<String> methodCalls;
-
-
 	private static final String VAR_TYPE = "(final )?(int|double|String|char|boolean)+(.+);";
 	private static final String BLOCK_DEC = "(void |while *\\(?|if *\\(?)";
 	private static final String END_BLOCK = "}";
@@ -40,6 +38,7 @@ public class CodeReader {
 	 * @param lines
 	 * @return
 	 */
+	
 	 static void check(ArrayList<String> lines) throws IOException {
 		for (String line : lines) {
 			String reg = identify_line(line);
@@ -106,7 +105,8 @@ public class CodeReader {
 		String type = m.group(2);
 		String[] assignments = m.group(3).split(",");
 		for (String assign : assignments) {
-			toAdd.add(VariableFactory.variableFactory(finality, type, assign, currentBlock)); //todo try&catch here?
+			toAdd.add(VariableFactory.createVariable(finality, type, assign, currentBlock)); //todo try&catch
+			// here?
 
 		}
 	}

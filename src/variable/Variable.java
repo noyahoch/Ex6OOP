@@ -43,7 +43,6 @@ public class Variable {
 			this.typeName = typeName;
 			this.typePattern = typePattern;
 		}
-
 	}
 
 	boolean checkValidity() {
