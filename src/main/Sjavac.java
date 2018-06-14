@@ -56,7 +56,7 @@ public class Sjavac {
             File pathName = new File(args[DIRECTORY_PLACE]);
             try{
                 ArrayList<String> lines = parseData(pathName);
-                CodeReader.check(lines);
+                CodeReader.checkCode(lines);
                 System.out.println(LEGAL_CODE);
             } catch (IOException e) {
                 System.out.println(IOPROMBLEM);

@@ -38,7 +38,6 @@ public class CodeReader {
 
 	public static CodeReader getInstance(){return codeReader;}
 
-
 	/**
 	 * Checks the if the lines in the file are valid.
 	 * @param lines
@@ -156,7 +155,7 @@ public class CodeReader {
 		    m = p.matcher(methodCall);
 	    	corresMethod = findMethod(m.group(1));
 		    if (corresMethod != null){
-		    	ArrayList<String> callArgs = new ArrayList<String>(Arrays.asList(m.group(2).split(","));
+		    	ArrayList<String> callArgs = new ArrayList<>(Arrays.asList(m.group(2).split(",")));
 
 			    isValid = corresMethod.checkParamValidity(callArgs);
 		    }

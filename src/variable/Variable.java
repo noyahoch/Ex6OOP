@@ -88,4 +88,7 @@ public class Variable {
 		return this.finality;
 	}
 
+	public String getName() {
+		return name;
+	}
 }
