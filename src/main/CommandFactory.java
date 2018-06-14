@@ -38,7 +38,7 @@ public class CommandFactory {
 	 * @param lines
 	 * @return
 	 */
-	
+
 	 static void check(ArrayList<String> lines) throws IOException {
 		for (String line : lines) {
 			String reg = identify_line(line);
