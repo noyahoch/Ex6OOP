@@ -12,10 +12,10 @@ import java.util.regex.Pattern;
 
 
 public class CodeReader {
-	static ArrayList<Method> methods; //TODO - do we really need it? cant we use a list of methods only,
+	private static ArrayList<Method> methods; //TODO - do we really need it? cant we use a list of methods only,
 	//TODO and variables check will be based on cuurentblock and its parents??
-	static ArrayList<Variable> vars;
-	static ArrayList<String> methodCalls;
+	private static ArrayList<Variable> vars;
+	private static ArrayList<String> methodCalls;
 	private static final String VAR_TYPE = "(final )?(int|double|String|char|boolean)+(.+);";
 	private static final String BLOCK_DEC = "(void |while *\\(?|if *\\(?)";
 	private static final String END_BLOCK = "}";
@@ -28,9 +28,15 @@ public class CodeReader {
 
 	private static final String INVALID_LINE = "INVALID";
 	private static Block currentBlock = null;
-	static Pattern p;
-	static Matcher m;
-	static boolean finality;
+	private static Pattern p;
+	private static Matcher m;
+	private static boolean finality;
+
+	private static CodeReader codeReader = new CodeReader();
+
+	private CodeReader(){};
+
+	public static CodeReader getInstance(){return codeReader;}
 
 
 	/**
@@ -39,39 +45,39 @@ public class CodeReader {
 	 * @return
 	 */
 
-	 static void check(ArrayList<String> lines) throws IOException {
+	 static void checkCode(ArrayList<String> lines) throws Exception {
 		for (String line : lines) {
 			String reg = identify_line(line);
 			switch (reg) {
 				case VAR_TYPE:
-					createVars(line);
+					createVars(line, vars);
 					break;
 				case BLOCK_DEC:
-					currentBlock = BlockFactory.createBlock(m.group(1), line), currentBlock;
+
+					//currentBlock = BlockFactory.createBlock(m.group(1), line, currentBlock);
+					if (currentBlock.isMethod()){methods.add((Method) currentBlock);}
 					break;
 				case END_BLOCK:
 					if (currentBlock != null) {
 						currentBlock = currentBlock.getParent();
-						if (currentBlock.isMethod() && !(lines.get(lines.indexOf(line) - 1) == RETURN))
-							throw new IOException("MISSING RETURN STATEMENT");
+						if (currentBlock.isMethod() && !(lines.get(lines.indexOf(line) - 1).equals(RETURN)))
+							throw new SyntaxException("MISSING RETURN STATEMENT");
 					} else
-						throw new IOException("TOO MANY }");
+						throw new LogicalException("TOO MANY }");
 					break;
 				case RETURN:
-					continue;
 					break;
 				case VAR_ASSIGN:
 					checkAssignment(line);
 					break;
 				case METHOD_CALL:
 					methodCalls.add(line);
+					checkMethodCall();
 					break;
 				default:
-					throw new IOException("UNRECOGNIZED COMMAND");
+					throw new SyntaxException("UNRECOGNIZED COMMAND");
 			}
-
 		}
-		 checkMethodCall();
 	}
 
 	/**
@@ -96,22 +102,21 @@ public class CodeReader {
 	 * @param line a line representing a variable declaration
 	 * @returns true iff succeeded creating variable objects
 	 */
-	public static boolean createVars(String line) throws Exception {
-		return createVars(line, vars);
-	}
 
-	public static boolean createVars(String line, ArrayList<Variable> toAdd) throws Exception {
-		finality = m.group(1) != null;// todo check if finality is for all values in the row
+	private static void createVars(String line, ArrayList<Variable> toAdd) throws Exception {
+
+		finality = m.group(1) != null;
 		String type = m.group(2);
 		String[] assignments = m.group(3).split(",");
-		for (String assign : assignments) {
-			toAdd.add(VariableFactory.createVariable(finality, type, assign, currentBlock)); //todo try&catch
-			// here?
-
+		try {
+			for (String assign : assignments) {
+				toAdd.add(VariableFactory.createVariable(finality, type, assign, currentBlock));
+			}
+		}
+		catch (LogicalException e) {
+			throw new Exception("f");
 		}
 	}
-
-
 
 	/**
 	 * Checks if an assignment line is valid.
@@ -121,16 +126,15 @@ public class CodeReader {
 	private static void checkAssignment(String line) throws IOException{
 		try{
 			Variable firstVar = currentBlock.findVar(m.group(1));
-			if (firstVar == null || (firstVar !=null && !firstVar.getFinalty()))
-				throw new IOException("ILLEGAL ASSIGNMENT");
+			if (firstVar == null || !firstVar.getFinality()) // todo documentation
+				throw new LogicalException("ILLEGAL ASSIGNMENT");
 			String value;
 			Variable secondVar = currentBlock.findVar(m.group(2));
 			if (secondVar != null)
 				value = secondVar.getValue();
 			else
 				value = m.group(2);
-			firstVar.setValue(value);
-			if (!firstVar.checkValidity())
+			if (!firstVar.setValue(value))
 				throw new IOException("MISMATCH");
 		} catch (Exception e) {
 			throw new IOException("ILLEGAL ASSIGNMENT");
@@ -142,20 +146,21 @@ public class CodeReader {
      * Reads a line of method calls and checks if the method call is correct and logical.
      * @return true iff the call is correct and logical.
      */
-    private static boolean checkMethodCall() throws IOException { // todo check type & parameters type
+    private static void checkMethodCall() throws IOException {//todo rethinking
 	    if (currentBlock == null)
 	    	throw new IOException("CANNOT CALL METHOD GLOBALLY");
-		Block corresMethod;
+		Method corresMethod;
 	    boolean isValid = true;
 	    p = Pattern.compile(METHOD_CALL);
 	    for (String methodCall : methodCalls) {
 		    m = p.matcher(methodCall);
 	    	corresMethod = findMethod(m.group(1));
-		    if (corresMethod != null)
-		    	ArrayList<String> callArgs =
-						new ArrayList<String>(Arrays.asList(m.group(2).split(","));
+		    if (corresMethod != null){
+		    	ArrayList<String> callArgs = new ArrayList<String>(Arrays.asList(m.group(2).split(","));
+
 			    isValid = corresMethod.checkParamValidity(callArgs);
-		    else if (corresMethod == null || !isValid)
+		    }
+		    else if (!isValid)
 			    throw new IOException("INVALID METHOD CALL");
 	    }
     }
@@ -165,31 +170,14 @@ public class CodeReader {
 	 * @param name the name of the method to search
 	 * @return The method with the name if exists. null otherwise.
 	 */
-	private static Block findMethod (String name) {
+	private static Method findMethod (String name) { //todo: rethinking
 		Block checkedBlock = currentBlock;
 		while (checkedBlock!=null){
-			for (Block block : blocks)
-				if (block.isMethod() && block.getName().equals(name))
-					return block;
+			for (Method method: methods)
+				if (method.getName().equals(name))
+					return method;
 			checkedBlock = checkedBlock.getParent();
 		}
 		return null;
 	}
-
-
-
-/*
-
-	private static boolean checkParameters(String[] methodParameters, Block originalMethod) throws Exception {
-		if (methodParameters.length != originalMethod.methods.length)//todo need methods Arraylist?
-			return false;
-		for (int i = 0; i < methodParameters.length; i++) {
-			if (!originalMethod.methods.get(i).checkValidity(methodParameters[i])) {
-				return false;
-			}
-		}
-		return true;
-	}
-*/
-
 }

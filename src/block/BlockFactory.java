@@ -1,17 +1,14 @@
 package block;
 
-import main.CodeReader;
+import main.CommandFactory;
 import variable.Variable;
+import variable.VariableFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.regex.*;
 
 public class BlockFactory {
 	ArrayList<Variable> parameters;
-<<<<<<< HEAD
-	CodeReader reader;
-=======
 <<<<<<< HEAD
 	public Block blockFactory(String type, String[]parameters) throws Exception {
 		if (type.equals("void")){
@@ -19,14 +16,13 @@ public class BlockFactory {
 				CommandFactory.createVars (parameter);
 =======
 >>>>>>> 7786052641f340bf53e7af120809275032b043bc
->>>>>>> b5745ac844185d00b0c09bb03d8f910c27578654
 
 	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME
 			+ "\\(([\\w ,]*)\\) *{ *";
 	private static final String CONDITIONAL = "(if|while)\\(([\\w \\|&]*\\)) *{ *";
 
-	public Block createBlock(String type, String line, CodeReader reader)  {
-		Pattern detectBlock = p.compile()
+	public Block createBlock(String type, String line, Block decBlock)  {
+
 
 	}
 
@@ -36,8 +32,7 @@ public class BlockFactory {
 	 * @param line the line to check
 	 * @throws IOException if line is invalid
 	 */
-	private static void createConditional (String line, CodeReader reader) throws IOException{
-		Block decBlock = reader.getCurrentBlock();
+	private static void createConditional (String line, Block decBlock) throws IOException{
 		if (decBlock == null)
 			throw new IOException("CANNOT DECLARE CONDITIONAL IN GLOBAL SCOPE");
 		try{

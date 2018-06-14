@@ -7,6 +7,7 @@ public class SyntaxException extends Exception {
 
 	/**
 	 * exception constructor.
+	 * @param missing_return_statement
 	 */
-	SyntaxException() {super(ERROR_MESSAGE);}
+	SyntaxException(String missing_return_statement) {super(ERROR_MESSAGE);}
 }
