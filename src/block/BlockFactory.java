@@ -1,21 +1,22 @@
 package block;
 
-import main.CommandFactory;
+import main.CodeReader;
 import variable.Variable;
-import variable.VariableFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.*;
 
 public class BlockFactory {
 	ArrayList<Variable> parameters;
+	CodeReader reader;
 
 	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME
 			+ "\\(([\\w ,]*)\\) *{ *";
 	private static final String CONDITIONAL = "(if|while)\\(([\\w \\|&]*\\)) *{ *";
 
-	public Block createBlock(String type, String line, Block decBlock)  {
-
+	public Block createBlock(String type, String line, CodeReader reader)  {
+		Pattern detectBlock = p.compile()
 
 	}
 
@@ -25,7 +26,8 @@ public class BlockFactory {
 	 * @param line the line to check
 	 * @throws IOException if line is invalid
 	 */
-	private static void createConditional (String line, Block decBlock) throws IOException{
+	private static void createConditional (String line, CodeReader reader) throws IOException{
+		Block decBlock = reader.getCurrentBlock();
 		if (decBlock == null)
 			throw new IOException("CANNOT DECLARE CONDITIONAL IN GLOBAL SCOPE");
 		try{
