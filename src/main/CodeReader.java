@@ -17,12 +17,12 @@ public class CodeReader {
 	private static ArrayList<String> methodCalls;
 	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME +
 											"\\(([\\w ,]*)\\) *\\{ *";
-	private static final String CONDITIONAL = " *(if|while)\\(([\\w \\|&]*\\)) *\\{ *";
+	private static final String CONDITIONAL = "(if|while) *\\(([\\w |&]*)\\) *\\{ *";
 	private static final String VAR_TYPE = " *(final )?(int|double|String|char|boolean)+(.+); *";
-	private static final String END_BLOCK = "}";
+	private static final String END_BLOCK = " *} *";
 	private static final String RETURN = "return *;";
 	private static final String VAR_ASSIGN = Variable.VARIABLE_PATTERN_NAME+" *= *([\\w\"]+) *; *";
-	private static final String METHOD_CALL = Method.VALID_METHOD_NAME + "\\(([\\w ,]*)\\) *; *";
+	private static final String METHOD_CALL = Method.VALID_METHOD_NAME + "\\(([\\w ,\"]*)\\) *; *";
 
 	private static final String[] regexes = new String[]
 			{VAR_TYPE,METHOD_DEC, END_BLOCK, CONDITIONAL, RETURN, VAR_ASSIGN, METHOD_CALL};
@@ -47,21 +47,23 @@ public class CodeReader {
 	 	for (String line : lines) {
 			try{
 				String reg = identify_line(line);
+				System.out.println(currentBlock);
 				switch (reg) {
 					case VAR_TYPE:
 						createVars(line, currentBlock.getVariables());
 						break;
 					case METHOD_DEC:
-						createMethod();
+						currentBlock = createMethod();
 						break;
 					case CONDITIONAL:
-						createConditional();
+						currentBlock = createConditional();
 						break;
 					case END_BLOCK:
-						if (currentBlock != null) {
-							currentBlock = currentBlock.getParent();
-							if (currentBlock.isMethod() && !(lines.get(lines.indexOf(line) - 1).equals(RETURN)))
+						if (currentBlock.getParent() != null) {
+							if (currentBlock.isMethod() && !(lines.get(lines.indexOf(line) - 1).equals(RETURN))) {
 								throw new SyntaxException("MISSING RETURN STATEMENT");
+							}
+							currentBlock = currentBlock.getParent();
 						} else
 							throw new LogicalException("TOO MANY }");
 						break;
@@ -132,6 +134,7 @@ public class CodeReader {
 	 */
 	private static void checkAssignment(String line) throws IOException{
 		try{
+			m.matches();
 			Variable firstVar = currentBlock.findVar(m.group(1));
 			if (firstVar == null || !firstVar.getFinality()) // todo documentation
 				throw new LogicalException("ILLEGAL ASSIGNMENT");
@@ -204,13 +207,14 @@ public class CodeReader {
      * @return true iff the call is correct and logical.
      */
     private static void checkMethodCall() throws IOException {//todo rethinking
-	    if (currentBlock == null)
+	    if (currentBlock.getParent() == null)
 	    	throw new IOException("CANNOT CALL METHOD GLOBALLY");
 		Method corresMethod;
 	    boolean isValid = true;
 	    p = Pattern.compile(METHOD_CALL);
 	    for (String methodCall : methodCalls) {
 		    m = p.matcher(methodCall);
+		    m.matches();
 	    	corresMethod = findMethod(m.group(1));
 		    if (corresMethod != null){
 		    	ArrayList<String> callArgs = new ArrayList<>(Arrays.asList(m.group(2).split(",")));
