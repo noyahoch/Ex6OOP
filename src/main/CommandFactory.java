@@ -122,7 +122,7 @@ public class CommandFactory {
 	 */
 	private static void createConditional (String line) throws IOException{
 		try{
-			Conditional cond = new Conditional(m.group(2), currentBlock);
+			Block cond = new Conditional(m.group(2), currentBlock);
 			boolean valid = cond.checkValidity();
 			if (!valid)
 				throw new IOException("INVALID BOOLEAN CONDITION");
@@ -174,7 +174,7 @@ public class CommandFactory {
 				if (block.getName().equals(methodName))
 					throw new IOException("METHOD OVERLOADING IS NOT SUPPORTED");
 
-			Method createdMethod = new Method(methodName,currentBlock, params);
+			Block createdMethod = new Method(methodName,currentBlock, params);
 			createVars(m.group(3), params);
 			currentBlock = createdMethod;
 			blocks.add(createdMethod);
