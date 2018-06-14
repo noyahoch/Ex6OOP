@@ -9,8 +9,10 @@ import java.util.regex.*;
  * A class representing a method in a Sjava file.
  */
 public class Method extends Block {
+
     public final static String VALID_METHOD_NAME = "([A-Za-z]+[\\w]*)";
     private final ArrayList<Variable> params;
+    String name;
 
     public Method(String name, Block parent, ArrayList<Variable> params ){
         this.name = name;
@@ -18,6 +20,10 @@ public class Method extends Block {
         this.parent = parent;
         this.variables = new ArrayList<>();
         this.params = params;
+    }
+
+    public String getName(){
+        return this.name;
     }
 
 
@@ -30,6 +36,9 @@ public class Method extends Block {
         Matcher m = p.matcher(name);
         if (m.matches())
             return false;
+        for (Variable param : params)
+            if (!param.checkValidity())
+                return false;
         return true;
     }
 

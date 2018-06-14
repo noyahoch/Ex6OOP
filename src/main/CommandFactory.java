@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 
 public class CommandFactory {
-	static ArrayList<Block> blocks; //TODO - do we really need it? cant we use a list of methods only,
+	static ArrayList<Method> methods; //TODO - do we really need it? cant we use a list of methods only,
 	//TODO and variables check will be based on cuurentblock and its parents??
 	static ArrayList<Variable> vars;
 	static ArrayList<String> methodCalls;
@@ -22,14 +22,15 @@ public class CommandFactory {
 	private static final String CONDITIONAL = "(if|while)\\(([\\w \\|&]*\\)) *{ *";
 	private static final String END_BLOCK = "}";
 	private static final String RETURN = "return *;";
-	private static final String INVALID_LINE = "INVALID";
 	private static final String VAR_ASSIGN = Variable.VARIABLE_PATTERN_NAME+" *= *([\\w\"]+) *; *";
 	private static final String METHOD_CALL = Method.VALID_METHOD_NAME + "\\(([\\w ,]*)\\) *; *";
 	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME
 												+ "\\(([\\w ,]*)\\) *{ *";
+
 	private static final String[] regexes = new String[]{VAR_TYPE, CONDITIONAL,
 			METHOD_DEC, END_BLOCK, RETURN,VAR_ASSIGN, METHOD_CALL};
 
+	private static final String INVALID_LINE = "INVALID";
 	private static Block currentBlock = null;
 	static Pattern p;
 	static Matcher m;
@@ -38,7 +39,6 @@ public class CommandFactory {
 
 	/**
 	 * Checks the if the lines in the file are valid.
-	 *
 	 * @param lines
 	 * @return
 	 */
@@ -121,13 +121,14 @@ public class CommandFactory {
 	 * @throws IOException if line is invalid
 	 */
 	private static void createConditional (String line) throws IOException{
+		if (currentBlock == null)
+			throw new IOException("CANNOT DECLARE CONDITIONAL IN GLOBAL SCOPE");
 		try{
 			Block cond = new Conditional(m.group(2), currentBlock);
 			boolean valid = cond.checkValidity();
 			if (!valid)
 				throw new IOException("INVALID BOOLEAN CONDITION");
 			currentBlock = cond;
-			blocks.add(cond);
 		} catch (Exception e){
 			throw new IOException("INVALID IF WHILE DECLARATION");
 		}
@@ -142,9 +143,11 @@ public class CommandFactory {
 	private static void checkAssignment(String line) throws IOException{
 		try{
 			Variable firstVar = currentBlock.findVar(m.group(1));
+			if (firstVar == null || (firstVar !=null && !firstVar.getFinalty()))
+				throw new IOException("ILLEGAL ASSIGNMENT");
 			String value;
 			Variable secondVar = currentBlock.findVar(m.group(2));
-			if (secondVar!= null)
+			if (secondVar != null)
 				value = secondVar.getValue();
 			else
 				value = m.group(2);
@@ -168,23 +171,25 @@ public class CommandFactory {
         try{
         	if (currentBlock.isMethod())
         		throw new IOException("DECLARED METHOD WITHIN METHOD");
-			ArrayList<Variable> params = new ArrayList<>();
 			String methodName = m.group(2);
-			for (Block block : block)
-				if (block.getName().equals(methodName))
+			for (Method method : methods)
+				if (method.getName().equals(methodName))
 					throw new IOException("METHOD OVERLOADING IS NOT SUPPORTED");
 
-			Block createdMethod = new Method(methodName,currentBlock, params);
-			createVars(m.group(3), params);
+			ArrayList<Variable> params = new ArrayList<>();
+			String[] varDec = m.group(3).split(",");
+			for (String declaration : varDec)
+				createVars(declaration, params);
+
+			Block createdMethod = new Method(methodName, currentBlock, params);
 			currentBlock = createdMethod;
-			blocks.add(createdMethod);
+			methods.add(createdMethod);
 			if (!createdMethod.checkValidity())
 				throw new IOException("INVALID METHOD DECLARATION");
 		} catch (Exception e){
         	throw new IOException("INVALID METHOD DECLARATION");
 		}
 	}
-
 
 
     /**
@@ -224,7 +229,6 @@ public class CommandFactory {
 		}
 		return null;
 	}
-
 
 
 
