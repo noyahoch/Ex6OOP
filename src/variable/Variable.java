@@ -7,7 +7,6 @@ public class Variable {
 	private String name;
 	private String type;
 	private String value;
-	private Block parent;
 	private boolean finality;
 	public static final String VARIABLE_PATTERN_NAME = "([A-Za-z]+[\\w]*|_  \\w+)";
 	private static final String STRING_PATTERN = "\".*\"";
@@ -20,14 +19,12 @@ public class Variable {
 	Variable(String name, String type, Block parent, boolean finality) throws ClassNotFoundException {
 		this.name = name;
 		this.type = type;
-		this.parent = parent;
 		this.finality = finality;
 	}
 
 	Variable(String name, String type, Block parent, boolean finality,  String value) throws ClassNotFoundException {
 		this.name = name;
 		this.type = type;
-		this.parent = parent;
 		this.value = value;
 		this.finality = finality;
 
@@ -77,6 +74,10 @@ public class Variable {
 	}
 	void setValue (String value){
 		this.value = value;
+	}
+
+	boolean getFinality(){
+		return this.finality;
 	}
 
 }

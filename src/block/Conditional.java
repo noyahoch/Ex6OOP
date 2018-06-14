@@ -29,6 +29,8 @@ public class Conditional extends Block{
             return false;
         String parts[] = condition.split(BOOLEAN_OP);
         for (String part : parts){
+            if (part =="")
+                return false;
             String varValue = this.valueOfVar(part);
             if (varValue != null)
                 part = varValue;

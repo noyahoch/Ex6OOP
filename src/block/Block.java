@@ -8,12 +8,6 @@ import java.util.ArrayList;
 public abstract class Block {
 	Block parent;
 	ArrayList<Variable> variables;
-	String name;
-
-	public String getName(){
-		return this.name;
-	}
-
 	boolean isMethod;
 
 	abstract boolean checkValidity();
@@ -21,7 +15,6 @@ public abstract class Block {
 	public void setParent(Block parent){
 		this.parent = parent;
 	}
-
 	public Block getParent(){
 		return this.parent;
 	}
@@ -58,8 +51,8 @@ public abstract class Block {
  	 * @param name a name of a variable
 	 * @return the value of variable with the corresponding name if exists; null otherwise.
 	 */
-	public String valueOfVar(String name) { // todo is the block is necessary ?
-		Variable var =findVar(name);
+	public String valueOfVar(String name) {
+		Variable var = findVar(name);
 		if (var!=null)
 			return val.getValue();
 		return null;
