@@ -88,8 +88,14 @@ public class Variable {
 		return this.finality;
 	}
 
+<<<<<<< HEAD
+	public String getName() {
+		return name;
+	}
+=======
 	public String getName(){
 		return this.name;
 	}
 
+>>>>>>> 82df49abddf67abf334d04b412a09db1d4fc23df
 }

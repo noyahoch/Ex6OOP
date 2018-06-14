@@ -33,6 +33,15 @@ public class CodeReader {
 	private static Matcher m;
 	private static boolean finality;
 
+<<<<<<< HEAD
+	private static CodeReader codeReader = new CodeReader();
+
+	private CodeReader(){};
+
+	public static CodeReader getInstance(){return codeReader;}
+
+=======
+>>>>>>> 82df49abddf67abf334d04b412a09db1d4fc23df
 	/**
 	 * Checks the if the lines in the file are valid.
 	 * @param lines
@@ -213,7 +222,11 @@ public class CodeReader {
 		    m = p.matcher(methodCall);
 	    	corresMethod = findMethod(m.group(1));
 		    if (corresMethod != null){
+<<<<<<< HEAD
+		    	ArrayList<String> callArgs = new ArrayList<>(Arrays.asList(m.group(2).split(",")));
+=======
 		    	ArrayList<String> callArgs = new ArrayList<String>(Arrays.asList(m.group(2).split(",")));
+>>>>>>> 82df49abddf67abf334d04b412a09db1d4fc23df
 
 			    isValid = corresMethod.checkParamValidity(callArgs);
 		    }
