@@ -12,7 +12,7 @@ public class Conditional extends Block{
     private String condition;
     private final String BOOLEAN_OP = " *&& *| *\\|\\| *";
 
-    Conditional(String condition, Block parent){
+    public Conditional(String condition, Block parent){
         this.condition = condition.trim();
         this.isMethod = false;
         this.parent = parent;
@@ -23,7 +23,7 @@ public class Conditional extends Block{
      * Checks validity of the condition of the Conditional.
      * @return true iff it is a valid boolean condition.
      */
-    boolean checkValidity() {
+    public boolean checkValidity() {
         char lastChar = condition.charAt(condition.length()-1);
         if (lastChar=='&' ||lastChar=='|' || condition == "")
             return false;

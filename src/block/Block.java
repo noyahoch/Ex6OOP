@@ -10,7 +10,7 @@ public abstract class Block {
 	ArrayList<Variable> variables;
 	boolean isMethod;
 
-	abstract boolean checkValidity();
+	abstract public boolean checkValidity();
 
 	public void setParent(Block parent){
 		this.parent = parent;

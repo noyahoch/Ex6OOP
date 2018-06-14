@@ -61,6 +61,8 @@ public class Sjavac {
             } catch (IOException e) {
                 System.out.println(IOPROMBLEM);
                 System.err.println("INVALID DIRECTORY.");
+            } catch (Exception e) {
+                System.out.println(IOPROMBLEM);
             }
         }
     }

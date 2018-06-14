@@ -31,7 +31,7 @@ public class Method extends Block {
      * Checks if a method declaration is valid.
      * @return true iff the declaration is valid.
      */
-    boolean checkValidity() {
+    public boolean checkValidity() {
         Pattern p = Pattern.compile(VALID_METHOD_NAME);
         Matcher m = p.matcher(name);
         if (m.matches())
