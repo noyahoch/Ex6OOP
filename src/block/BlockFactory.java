@@ -27,6 +27,7 @@ public class BlockFactory {
 		blockMatcher = blockPattern.matcher(line);
 		if (!blockMatcher.matches())
 <<<<<<< HEAD
+<<<<<<< HEAD
 			throw new IOException("ILLEGAL BLOCK CREATION");
 		if (type.contains(METHOD_KEY))
 			return createMethod(reader);
@@ -87,6 +88,8 @@ public class BlockFactory {
 
 }
 =======
+=======
+>>>>>>> 0dced554625a0869028bdbd6ad6474d3d12c3e32
 			throw new IOException ("ILLEGAL BLOCK CREATION");
 		if(type.contains(METHOD_KEY))
 			return createMethod(blockMatcher.group(2), reader);
@@ -161,5 +164,9 @@ public class BlockFactory {
 					}
 
 				}
+<<<<<<< HEAD
+			}
+>>>>>>> 0dced554625a0869028bdbd6ad6474d3d12c3e32
+=======
 			}
 >>>>>>> 0dced554625a0869028bdbd6ad6474d3d12c3e32
