@@ -38,12 +38,12 @@ public class CommandFactory {
 	 * @param lines
 	 * @return
 	 */
+	
 	 static void check(ArrayList<String> lines) throws IOException {
 		for (String line : lines) {
 			String reg = identify_line(line);
 			switch (reg) {
-				case VAR_TYPE
-
+				case VAR_TYPE:
 					createVars(line);
 					break;
 				case BLOCK_DEC:
