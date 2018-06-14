@@ -180,4 +180,12 @@ public class CodeReader {
 		}
 		return null;
 	}
+
+	public static Block getCurrentBlock() {
+		return currentBlock;
+	}
+
+	public static ArrayList<Method> getMethods() {
+		return methods;
+	}
 }
