@@ -16,8 +16,6 @@ public class CommandFactory {
 	//TODO and variables check will be based on cuurentblock and its parents??
 	static ArrayList<Variable> vars;
 	static ArrayList<String> methodCalls;
-
-
 	private static final String VAR_TYPE = "(final )?(int|double|String|char|boolean)+(.+);";
 	private static final String CONDITIONAL = "(if|while)\\(([\\w \\|&]*\\)) *{ *";
 	private static final String END_BLOCK = "}";
@@ -46,7 +44,8 @@ public class CommandFactory {
 		for (String line : lines) {
 			String reg = identify_line(line);
 			switch (reg) {
-				case VAR_TYPE:
+				case VAR_TYPE
+
 					createVars(line);
 					break;
 				case CONDITIONAL:
@@ -110,7 +109,8 @@ public class CommandFactory {
 		String type = m.group(2);
 		String[] assignments = m.group(3).split(",");
 		for (String assign : assignments) {
-			toAdd.add(VariableFactory.variableFactory(finality, type, assign, currentBlock)); //todo try&catch here?
+			toAdd.add(VariableFactory.createVariable(finality, type, assign, currentBlock)); //todo try&catch
+			// here?
 
 		}
 	}
