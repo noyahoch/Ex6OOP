@@ -19,16 +19,14 @@ public class CommandFactory {
 
 
 	private static final String VAR_TYPE = "(final )?(int|double|String|char|boolean)+(.+);";
-	private static final String CONDITIONAL = "(if|while)\\(([\\w \\|&]*\\)) *{ *";
+	private static final String BLOCK_DEC = "(void |while *\\(?|if *\\(?)";
 	private static final String END_BLOCK = "}";
 	private static final String RETURN = "return *;";
 	private static final String VAR_ASSIGN = Variable.VARIABLE_PATTERN_NAME+" *= *([\\w\"]+) *; *";
 	private static final String METHOD_CALL = Method.VALID_METHOD_NAME + "\\(([\\w ,]*)\\) *; *";
-	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME
-												+ "\\(([\\w ,]*)\\) *{ *";
 
-	private static final String[] regexes = new String[]{VAR_TYPE, CONDITIONAL,
-			METHOD_DEC, END_BLOCK, RETURN,VAR_ASSIGN, METHOD_CALL};
+	private static final String[] regexes = new String[]{VAR_TYPE,
+			END_BLOCK, RETURN,VAR_ASSIGN, METHOD_CALL};
 
 	private static final String INVALID_LINE = "INVALID";
 	private static Block currentBlock = null;
@@ -49,11 +47,9 @@ public class CommandFactory {
 				case VAR_TYPE:
 					createVars(line);
 					break;
-				case CONDITIONAL:
-					createConditional(line);
+				case BLOCK_DEC:
+					currentBlock = BlockFactory.createBlock(m.group(1), line), currentBlock;
 					break;
-				case METHOD_DEC:
-					createMethod(line);
 				case END_BLOCK:
 					if (currentBlock != null) {
 						currentBlock = currentBlock.getParent();
@@ -115,24 +111,6 @@ public class CommandFactory {
 		}
 	}
 
-	/**
-	 * Creates a new conditional (if or while) according to the line and checks its validity
-	 * @param line the line to check
-	 * @throws IOException if line is invalid
-	 */
-	private static void createConditional (String line) throws IOException{
-		if (currentBlock == null)
-			throw new IOException("CANNOT DECLARE CONDITIONAL IN GLOBAL SCOPE");
-		try{
-			Block cond = new Conditional(m.group(2), currentBlock);
-			boolean valid = cond.checkValidity();
-			if (!valid)
-				throw new IOException("INVALID BOOLEAN CONDITION");
-			currentBlock = cond;
-		} catch (Exception e){
-			throw new IOException("INVALID IF WHILE DECLARATION");
-		}
-	}
 
 
 	/**
@@ -156,38 +134,6 @@ public class CommandFactory {
 				throw new IOException("MISMATCH");
 		} catch (Exception e) {
 			throw new IOException("ILLEGAL ASSIGNMENT");
-		}
-	}
-
-
-	/**
-	 * Reads a method declaration and creates Block objects according to it.
-	 * Adds the blocks to the blocks arraylist.
-	 *
-	 * @param line a line representing a method declaration
-	 * @throws IOException if line is invalid
-	 */
-	private static void createMethod(String line) throws IOException {
-        try{
-        	if (currentBlock.isMethod())
-        		throw new IOException("DECLARED METHOD WITHIN METHOD");
-			String methodName = m.group(2);
-			for (Method method : methods)
-				if (method.getName().equals(methodName))
-					throw new IOException("METHOD OVERLOADING IS NOT SUPPORTED");
-
-			ArrayList<Variable> params = new ArrayList<>();
-			String[] varDec = m.group(3).split(",");
-			for (String declaration : varDec)
-				createVars(declaration, params);
-
-			Block createdMethod = new Method(methodName, currentBlock, params);
-			currentBlock = createdMethod;
-			methods.add(createdMethod);
-			if (!createdMethod.checkValidity())
-				throw new IOException("INVALID METHOD DECLARATION");
-		} catch (Exception e){
-        	throw new IOException("INVALID METHOD DECLARATION");
 		}
 	}
 
