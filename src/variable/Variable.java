@@ -8,7 +8,7 @@ public class Variable {
 	private String type;
 	private String value;
 	private boolean finality;
-	public static final String VARIABLE_PATTERN_NAME = "([A-Za-z]+[\\w]*|_  \\w+)";
+	public static final String VARIABLE_PATTERN_NAME = "([A-Za-z]+[\\w]*|_\\w+)";
 	private static final String STRING_PATTERN = "\".*\"";
 	private static final String INT_PATTERN = "\\d+";
 	private static final String DOUBLE_PATTERN = "\\d+(\\.\\d+)?";

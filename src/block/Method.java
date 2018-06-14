@@ -34,7 +34,7 @@ public class Method extends Block {
     public boolean checkValidity() {
         Pattern p = Pattern.compile(VALID_METHOD_NAME);
         Matcher m = p.matcher(name);
-        if (m.matches())
+        if (!m.matches())
             return false;
         for (Variable param : params)
             if (!param.checkValidity())

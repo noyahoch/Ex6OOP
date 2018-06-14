@@ -40,7 +40,7 @@ public abstract class Block {
 		Block currentBlock = this;
 		while (currentBlock != null) {
 			for (Variable var : currentBlock.getVariables())
-				if (var.getName() == name)
+				if (var.getName().equals(name))
 					return var;
 			currentBlock = currentBlock.getParent();
 		}

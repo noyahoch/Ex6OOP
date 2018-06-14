@@ -13,8 +13,8 @@ public class Sjavac {
     private static final int ILLEGAL_CODE = 1;
     private static final int LEGAL_CODE = 0;
     private static final int IOPROMBLEM = 2;
-    private static final String IGNORE_LINE = "\\s | [^\\\\]";
-    private static final String validSuffixOnce = "$[;{}]";
+    private static final String IGNORE_LINE = "\\s*|//.*";
+    private static final String validSuffixOnce = ".*[;{}] *$";
 
     /**
      * Creates an Arraylist of String based on the lines in the file.
@@ -29,11 +29,10 @@ public class Sjavac {
         BufferedReader buff = new BufferedReader(reader);
         String curLine = buff.readLine();
         while(curLine != null){
+            System.out.println(curLine); //TODO remove
             Pattern p = Pattern.compile(IGNORE_LINE);
             Matcher m = p.matcher(curLine);
-            if(m.matches())
-                continue;
-            else{
+            if(!m.matches()){
                 p = Pattern.compile(validSuffixOnce);
                 m = p.matcher(curLine);
                 if(m.matches())
@@ -60,7 +59,7 @@ public class Sjavac {
                 System.out.println(LEGAL_CODE);
             } catch (IOException e) {
                 System.out.println(IOPROMBLEM);
-                System.err.println("INVALID DIRECTORY.");
+                System.err.println(e.getMessage());
             } catch (Exception e) {
                 System.out.println(IOPROMBLEM);
             }

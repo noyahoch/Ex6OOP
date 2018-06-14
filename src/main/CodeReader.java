@@ -15,20 +15,20 @@ public class CodeReader {
 	private static ArrayList<Method> methods;
 	private static ArrayList<Variable> vars;
 	private static ArrayList<String> methodCalls;
-	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME
-			+ "\\(([\\w ,]*)\\) *\\{ *";
+	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME +
+											"\\(([\\w ,]*)\\) *\\{ *";
 	private static final String CONDITIONAL = "(if|while)\\(([\\w \\|&]*\\)) *\\{ *";
-	private static final String VAR_TYPE = "(final )?(int|double|String|char|boolean)+(.+);";
+	private static final String VAR_TYPE = " *(final )?(int|double|String|char|boolean)+(.+); *";
 	private static final String END_BLOCK = "}";
 	private static final String RETURN = "return *;";
 	private static final String VAR_ASSIGN = Variable.VARIABLE_PATTERN_NAME+" *= *([\\w\"]+) *; *";
 	private static final String METHOD_CALL = Method.VALID_METHOD_NAME + "\\(([\\w ,]*)\\) *; *";
 
-	private static final String[] regexes = new String[]{VAR_TYPE,
-			END_BLOCK, RETURN,VAR_ASSIGN, METHOD_CALL};
+	private static final String[] regexes = new String[]{VAR_TYPE,METHOD_DEC,
+			END_BLOCK, CONDITIONAL, RETURN, VAR_ASSIGN, METHOD_CALL};
 
 	private static final String INVALID_LINE = "INVALID";
-	private static Block currentBlock = null;
+	private static Block currentBlock;
 	private static Pattern p;
 	private static Matcher m;
 	private static boolean finality;
@@ -39,37 +39,46 @@ public class CodeReader {
 	 * @return
 	 */
 	 static void checkCode(ArrayList<String> lines) throws Exception {
-		for (String line : lines) {
-			String reg = identify_line(line);
-			switch (reg) {
-				case VAR_TYPE:
-					createVars(line, vars);
-					break;
-				case METHOD_DEC:
+		 methods = new ArrayList<>();
+		 vars = new ArrayList<>();
+		 methodCalls = new ArrayList<>();
+		 currentBlock =  new Method(null, null, vars);
 
-					break;
-				case CONDITIONAL:
-					createConditional();
-					break;
-				case END_BLOCK:
-					if (currentBlock != null) {
-						currentBlock = currentBlock.getParent();
-						if (currentBlock.isMethod() && !(lines.get(lines.indexOf(line) - 1).equals(RETURN)))
-							throw new SyntaxException("MISSING RETURN STATEMENT");
-					} else
-						throw new LogicalException("TOO MANY }");
-					break;
-				case RETURN:
-					break;
-				case VAR_ASSIGN:
-					checkAssignment(line);
-					break;
-				case METHOD_CALL:
-					methodCalls.add(line);
-					checkMethodCall();
-					break;
-				default:
-					throw new SyntaxException("UNRECOGNIZED COMMAND");
+	 	for (String line : lines) {
+			try{
+				String reg = identify_line(line);
+				switch (reg) {
+					case VAR_TYPE:
+						createVars(line, currentBlock.getVariables());
+						break;
+					case METHOD_DEC:
+						createMethod();
+						break;
+					case CONDITIONAL:
+						createConditional();
+						break;
+					case END_BLOCK:
+						if (currentBlock != null) {
+							currentBlock = currentBlock.getParent();
+							if (currentBlock.isMethod() && !(lines.get(lines.indexOf(line) - 1).equals(RETURN)))
+								throw new SyntaxException("MISSING RETURN STATEMENT");
+						} else
+							throw new LogicalException("TOO MANY }");
+						break;
+					case RETURN:
+						break;
+					case VAR_ASSIGN:
+						checkAssignment(line);
+						break;
+					case METHOD_CALL:
+						methodCalls.add(line);
+						checkMethodCall();
+						break;
+					default:
+						throw new Exception("UNRECOGNIZED COMMAND IN LINE: " + lines.indexOf(line));
+				}
+			}catch(Exception e){
+				throw new IOException(e.getMessage() + " " + lines.indexOf(line) + " " + line) ;
 			}
 		}
 	}
@@ -98,13 +107,17 @@ public class CodeReader {
 	 */
 
 	private static void createVars(String line, ArrayList<Variable> toAdd) throws Exception {
+		p = Pattern.compile(VAR_TYPE);
+		m = p.matcher(line);
+		m.matches();
 
-		finality = m.group(1) != null;
+		finality = (m.group(1) != null);
 		String type = m.group(2);
 		String[] assignments = m.group(3).split(",");
 		try {
 			for (String assign : assignments) {
-				toAdd.add(VariableFactory.createVariable(finality, type, assign, currentBlock));
+				Variable var = VariableFactory.createVariable(finality, type, assign.trim(), currentBlock);
+				toAdd.add(var);
 			}
 		}
 		catch (LogicalException e) {
@@ -162,7 +175,7 @@ public class CodeReader {
 	 */
 	private static Block createMethod() throws IOException {
 		try {
-			if (currentBlock.isMethod())
+			if (currentBlock.isMethod() && currentBlock.getParent() != null)
 				throw new IOException("DECLARED METHOD WITHIN METHOD");
 			String methodName = m.group(2);
 			for (Method method : methods)
@@ -172,9 +185,10 @@ public class CodeReader {
 			ArrayList<Variable> params = new ArrayList<>();
 			String[] varDec = m.group(3).split(",");
 			for (String declaration : varDec)
-				CodeReader.createVars(declaration, params);
+				createVars(declaration+";".trim(), params);
 
 			Block createdMethod = new Method(methodName, currentBlock, params);
+
 			if (!createdMethod.checkValidity())
 				throw new IOException("INVALID METHOD DECLARATION");
 			return createdMethod;

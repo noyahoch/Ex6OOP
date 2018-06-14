@@ -5,9 +5,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class VariableFactory {
-	private static final String VARIABLE_ASSIGNMENT_PATTERN = Variable.VARIABLE_PATTERN_NAME +"(" + " *(=) " +
+	private static final String VARIABLE_ASSIGNMENT_PATTERN = Variable.VARIABLE_PATTERN_NAME +"( *(=) " +
 			"*(\\S|\".*\"))?";
-	private Matcher m;
 
 	public static Variable createVariable(boolean finality, String type, String assign, Block currentBlock) throws
 			Exception {
@@ -15,19 +14,19 @@ public class VariableFactory {
 		Variable newVar;
 		Pattern p = Pattern.compile(VARIABLE_ASSIGNMENT_PATTERN);
 		Matcher m = p.matcher(assign);
-
+		m.matches();
 		if (m.group(2) != null) {// if the variable has no value
-			String assignmentValue = currentBlock.valueOfVar(m.group(1));
+			String assignmentValue = currentBlock.valueOfVar(m.group(4));
 			if (assignmentValue == null)
-				assignmentValue = m.group(3);
+				assignmentValue = m.group(4);
 			newVar = new Variable(m.group(1), type, currentBlock, finality,  assignmentValue);
-		} else {
+		} else
 			newVar = new Variable(m.group(1), type, currentBlock, finality);
-			}
-		if (newVar.checkValidity()) {
+
+
+		if (newVar.checkValidity())
 			return newVar;
-		} else {
+		else
 			throw new Exception("fuck");
-		}
 	}
 }
