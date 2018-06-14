@@ -47,7 +47,7 @@ public class Method extends Block {
      * @param givenArgs
      * @return
      */
-    public static boolean checkParamValidity(ArrayList<String> givenArgs) { //todo rethinking
+    public boolean checkParamValidity(ArrayList<String> givenArgs) { //todo rethinking
         if (givenArgs.size() != params.size())
             return false; // Check if given args are of right length
         for (int i = 0; i < params.size(); i++){
