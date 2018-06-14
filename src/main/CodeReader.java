@@ -181,11 +181,11 @@ public class CodeReader {
 		return null;
 	}
 
-	public static Block getCurrentBlock() {
+	public Block getCurrentBlock() {
 		return currentBlock;
 	}
 
-	public static ArrayList<Method> getMethods() {
+	public ArrayList<Method> getMethods() {
 		return methods;
 	}
 }
