@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class CommandFactory {
+public class CodeReader {
 	static ArrayList<Method> methods; //TODO - do we really need it? cant we use a list of methods only,
 	//TODO and variables check will be based on cuurentblock and its parents??
 	static ArrayList<Variable> vars;
