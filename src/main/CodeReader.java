@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class CodeReader {
 	private static ArrayList<Method> methods;
-	private static ArrayList<Variable> vars;
+	private static ArrayList<Variable> vars= new ArrayList<>();
 	private static ArrayList<String> methodCalls;
 	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME +
 											"\\(([\\w ,]*)\\) *\\{ *";
@@ -23,6 +23,8 @@ public class CodeReader {
 	private static final String RETURN = "return *;";
 	private static final String VAR_ASSIGN = Variable.VARIABLE_PATTERN_NAME+" *= *([\\w\"]+) *; *";
 	private static final String METHOD_CALL = Method.VALID_METHOD_NAME + "\\(([\\w ,\"]*)\\) *; *";
+	private static final String RETURN_CALL = "return";//todo is it smart?
+
 
 	private static final String[] regexes = new String[]
 			{VAR_TYPE,METHOD_DEC, END_BLOCK, CONDITIONAL, RETURN, VAR_ASSIGN, METHOD_CALL};
@@ -32,6 +34,8 @@ public class CodeReader {
 	private static Pattern p;
 	private static Matcher m;
 	private static boolean finality;
+	private static final Global globalBlock = new Global(vars);
+
 
 	/**
 	 * Checks the if the lines in the file are valid.
@@ -40,14 +44,13 @@ public class CodeReader {
 	 */
 	 static void checkCode(ArrayList<String> lines) throws Exception {
 		 methods = new ArrayList<>();
-		 vars = new ArrayList<>();
 		 methodCalls = new ArrayList<>();
-		 currentBlock =  new Method(null, null, vars);
-
+		 currentBlock =  globalBlock;
+		 int index = -1;
 	 	for (String line : lines) {
+	 		index ++;
 			try{
 				String reg = identify_line(line);
-				System.out.println(currentBlock);
 				switch (reg) {
 					case VAR_TYPE:
 						createVars(line, currentBlock.getVariables());
@@ -60,8 +63,9 @@ public class CodeReader {
 						break;
 					case END_BLOCK:
 						if (currentBlock.getParent() != null) {
-							if (currentBlock.isMethod() && !(lines.get(lines.indexOf(line) - 1).equals(RETURN))) {
-								System.out.println("rwkvjrev");
+
+							if (currentBlock.isMethod() && !(lines.get(index-1).contains(RETURN_CALL))) {
+
 								throw new SyntaxException("MISSING RETURN STATEMENT");
 							}
 							currentBlock = currentBlock.getParent();
@@ -110,6 +114,7 @@ public class CodeReader {
 	 */
 
 	private static void createVars(String line, ArrayList<Variable> toAdd) throws Exception {
+		if (line.equals(";")){return;} // todo handle with empty line (args)
 		p = Pattern.compile(VAR_TYPE);
 		m = p.matcher(line);
 		m.matches();
@@ -157,17 +162,20 @@ public class CodeReader {
 	 *
 	 * @throws IOException if line is invalid
 	 */
-	private static Block createConditional() throws IOException {
-		if (currentBlock == null)
-			throw new IOException("CANNOT DECLARE CONDITIONAL IN GLOBAL SCOPE");
+	private static Block createConditional() throws LogicalException, SyntaxException {
+		if (currentBlock==globalBlock)
+			throw new LogicalException("CANNOT DECLARE CONDITIONAL IN GLOBAL SCOPE");
 		try {
 			Block cond = new Conditional(m.group(2), currentBlock);
 			boolean valid = cond.checkValidity();
 			if (!valid)
-				throw new IOException("INVALID BOOLEAN CONDITION");
+				throw new SyntaxException("INVALID BOOLEAN CONDITION");
 			return cond;
-		} catch (Exception e) {
-			throw new IOException("INVALID IF WHILE DECLARATION");
+		} catch (LogicalException e) {
+			throw new LogicalException("INVALID IF WHILE DECLARATION");
+		}
+		catch (SyntaxException e){
+			throw new SyntaxException("ced");
 		}
 	}
 
@@ -177,29 +185,39 @@ public class CodeReader {
 	 *
 	 * @throws IOException if line is invalid
 	 */
-	private static Block createMethod() throws IOException {
+	private static Block createMethod() throws Exception {
 		try {
 			if (currentBlock.isMethod() && currentBlock.getParent() != null)
 				throw new IOException("DECLARED METHOD WITHIN METHOD");
 			String methodName = m.group(2);
 			for (Method method : methods)
-				if (method.getName().equals(methodName))
+				if (method.getName().equals(methodName)) {
 					throw new IOException("METHOD OVERLOADING IS NOT SUPPORTED");
+				}
 
 			ArrayList<Variable> params = new ArrayList<>();
 			String[] varDec = m.group(3).split(",");
-			for (String declaration : varDec)
-				createVars(declaration+";".trim(), params);
+			for (String declaration : varDec) {
+
+				createVars(declaration + ";".trim(), params);
+
+			}
 
 			Block createdMethod = new Method(methodName, currentBlock, params);
 
-			if (!createdMethod.checkValidity())
+			if (!createdMethod.checkValidity()) {
+
+
 				throw new IOException("INVALID METHOD DECLARATION");
+			}
 			return createdMethod;
 		} catch (Exception e) {
+
+			System.out.println(e.getMessage());
 			throw new IOException("INVALID METHOD DECLARATION");
 		}
 	}
+
 
 
 
@@ -208,7 +226,7 @@ public class CodeReader {
      * @return true iff the call is correct and logical.
      */
     private static void checkMethodCall() throws IOException {//todo rethinking
-	    if (currentBlock.getParent() == null)
+	    if (currentBlock.getParent()==null)
 	    	throw new IOException("CANNOT CALL METHOD GLOBALLY");
 		Method corresMethod;
 	    boolean isValid = true;

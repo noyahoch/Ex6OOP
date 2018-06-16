@@ -1,9 +1,9 @@
 package main;
 
-public class SyntaxException extends Exception {
+public class SyntaxException extends ReadingCodeException {
 	private static final long serialVersionUID = 1L;
 
-	private static final String ERROR_MESSAGE = "ERROR: Bad format of Commands File";//todo
+	private static final String ERROR_MESSAGE = "Syntax Exception";//todo
 
 	/**
 	 * exception constructor.

@@ -29,7 +29,7 @@ public class Sjavac {
         BufferedReader buff = new BufferedReader(reader);
         String curLine = buff.readLine();
         while(curLine != null){
-            System.out.println(curLine); //TODO remove
+           // System.out.println(curLine); //TODO remove
             Pattern p = Pattern.compile(IGNORE_LINE);
             Matcher m = p.matcher(curLine);
             if(!m.matches()){
