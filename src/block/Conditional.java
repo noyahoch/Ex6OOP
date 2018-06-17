@@ -1,5 +1,6 @@
 package block;
 
+import main.LogicalException;
 import variable.*;
 
 import java.util.ArrayList;
@@ -21,10 +22,15 @@ public class Conditional extends Block{
         this.variables = new ArrayList<Variable>();
     }
 
-    /**
+	public String[] breakCondToParts() {
+		return condition.split(BOOLEAN_OP);
+	}
+
+	/**
      * Checks validity of the condition of the Conditional.
      * @return true iff it is a valid boolean condition.
      */
+
     public boolean checkValidity() {
         if (condition.equals(""))
             return false;
@@ -32,22 +38,25 @@ public class Conditional extends Block{
         if (lastChar=='&' ||lastChar=='|')
             return false;
         String parts[] = condition.split(BOOLEAN_OP);
-        for (String part : parts){
-            if (part.equals("") || part.contains("|") || part.contains("&"))
-                return false;
-            Variable var = this.findVar(part);
-            if (var != null)
-                part = var.getValue();
-            if (part == null)
-                return false;
-            if (!(part.equals(TRUE) || part.equals(FALSE))) {
-                try {
-                    Double.parseDouble(part);
-                } catch (Exception e) {
-                    return false;
-                }
-            }
-        }
+        for (String part : parts) {
+	        if (part.contains("|") || part.contains("&")) {
+	        	return false;
+	        }
+	        Variable var = findVar(part);
+		    if (var != null) {
+			    part = var.getValue();
+		    }
+		     if (part==null || part.trim().equals("")) {
+			     return false;
+		     }
+		     if (!(part.trim().equals(TRUE) || part.equals(FALSE))) {
+			        try {
+				        Double.parseDouble(part);
+			        } catch (Exception e) {
+				        return false;
+			        }
+		        }
+	        }
     return true;
     }
 

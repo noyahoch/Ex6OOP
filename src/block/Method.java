@@ -46,25 +46,37 @@ public class Method extends Block {
      * @param givenArgs
      * @return
      */
-    public boolean checkParamValidity(ArrayList<String> givenArgs) { //todo rethinking
-        if (givenArgs.size() != params.size())
+    public boolean checkParamValidity(ArrayList<String> givenArgs, Block scope) { //todo rethinking
+	    if (givenArgs.size() == 1 && givenArgs.get(0).equals("") && params.size()==0) {
+	    	return true;
+	    }
+	    if (givenArgs.size() != params.size())
             return false; // Check if given args are of right length
         for (int i = 0; i < params.size(); i++){
-            String paramValue;
+        	boolean isValid;
+        	String paramValue;
             //If its a name of a relevant variable, assign its value.
-            paramValue = this.valueOfVar(givenArgs.get(i));
+	        paramValue = scope.valueOfVar(givenArgs.get(i));
             if (paramValue == null)//If its not a var name assign it.
                 paramValue = givenArgs.get(i);
-            params.get(i).setValue(paramValue);
+            isValid = params.get(i).setValue(paramValue);
+            if(!isValid) {
+                return false;
+            }
         }
-        boolean isValid = true;
-        // Check if values given by the call are valid.
-        for (Variable param : params){
-            if(!param.checkValidity())
-                isValid = false;
-            param.setValue(null); //So value will not be changed.
-        }
-        return isValid;
+        return true;
+
+
     }
+
+	public Variable findParam(String name){
+    	for (Variable param : params) {
+		    if (param.getName().equals(name))
+			    return param;
+	    }
+    	return null;
+	}
+
+
 
 }

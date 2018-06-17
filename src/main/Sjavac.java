@@ -14,7 +14,7 @@ public class Sjavac {
     private static final int LEGAL_CODE = 0;
     private static final int IOPROMBLEM = 2;
     private static final String IGNORE_LINE = "\\s*|//.*";
-    private static final String validSuffixOnce = ".*[;{}] *$";
+    private static final String validSuffixOnce = ".*[;{}]\\s*$";
 
     /**
      * Creates an Arraylist of String based on the lines in the file,

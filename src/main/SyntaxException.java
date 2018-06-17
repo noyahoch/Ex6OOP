@@ -9,9 +9,9 @@ public class SyntaxException extends ReadingCodeException {
 	 * exception constructor.
 	 * @param s the exception message.
 	 */
-	SyntaxException(String s) {super(s);}
+	public SyntaxException(String s) {super(s);}
 
-	SyntaxException(){
+	public SyntaxException(){
 		super(ERROR_MESSAGE);
 	}
 }

@@ -42,11 +42,12 @@ public abstract class Block {
 	public Variable findVar(String name){
 		Block currentBlock = this;
 		while (currentBlock != null) {
-			for (Variable var : currentBlock.getVariables())
+			for (Variable var : currentBlock.getVariables()){
 				if (var.getName().equals(name))
-					return var;
+					return var;}
 			currentBlock = currentBlock.getParent();
 		}
+
 		return null;
 	}
 
