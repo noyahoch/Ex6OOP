@@ -38,7 +38,7 @@ public abstract class Block {
 	 */
 	public Variable findVar(String name){
 		Block currentBlock = this;
-		while (currentBlock.getParent() != null) {
+		while (currentBlock != null) {
 			for (Variable var : currentBlock.getVariables())
 				if (var.getName().equals(name))
 					return var;

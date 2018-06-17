@@ -1,7 +1,8 @@
 package variable;
 import block.Block;
 
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Variable {
 	private String name;
@@ -12,17 +13,17 @@ public class Variable {
 	private static final String STRING_PATTERN = "\".*\"";
 	private static final String INT_PATTERN = "\\d+";
 	private static final String DOUBLE_PATTERN = "\\d+(\\.\\d+)?";
-	private static final String CHAR_PATTERN = "\'(.*)?";
+	private static final String CHAR_PATTERN = "\'(.*)\'";
 	private static final String BOOLEAN_PATTERN = "true|false|\\d+(\\.\\d+)?";
 
 
-	Variable(String name, String type, Block parent, boolean finality) throws ClassNotFoundException {
+	Variable(String name, String type, Block parent, boolean finality){
 		this.name = name;
 		this.type = type;
 		this.finality = finality;
 	}
 
-	Variable(String name, String type, Block parent, boolean finality,  String value) throws ClassNotFoundException {
+	Variable(String name, String type, Block parent, boolean finality,  String value) {
 		this.name = name;
 		this.type = type;
 		this.value = value;
@@ -62,7 +63,8 @@ public class Variable {
 				}
 			}
 			return true;
-		}
+		} else if (finality)
+			return false;
 		return true;
 	}
 
@@ -90,6 +92,10 @@ public class Variable {
 
 	public String getName(){
 		return this.name;
+	}
+
+	public String getType(){
+		return this.type;
 	}
 
 }

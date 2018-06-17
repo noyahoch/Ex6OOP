@@ -23,13 +23,13 @@ public class Sjavac {
      * @return Array list of Strings representing the lines.
      * @throws IOException in case there was a problem with reading the file.
      */
-    private static ArrayList<String> parseData(File file) throws IOException{
+    private static ArrayList<String> parseData(File file) throws SyntaxException, IOException{
         ArrayList<String> lines = new ArrayList<>();
         FileReader reader = new FileReader(file);
         BufferedReader buff = new BufferedReader(reader);
         String curLine = buff.readLine();
         while(curLine != null){
-           // System.out.println(curLine); //TODO remove
+            //System.out.println(curLine); //TODO remove
             Pattern p = Pattern.compile(IGNORE_LINE);
             Matcher m = p.matcher(curLine);
             if(!m.matches()){
@@ -38,7 +38,7 @@ public class Sjavac {
                 if(m.matches())
                     lines.add(curLine.trim()); //Ignores spaces at the beginning and the end of the line
                 else
-                    throw new IOException("INVALID LINE SUFFIX");
+                    throw new SyntaxException("INVALID LINE SUFFIX");
             }
             curLine = buff.readLine();
         }
@@ -60,8 +60,9 @@ public class Sjavac {
             } catch (IOException e) {
                 System.out.println(IOPROMBLEM);
                 System.err.println(e.getMessage());
-            } catch (Exception e) {
-                System.out.println(IOPROMBLEM);
+            } catch (ReadingCodeException e) {
+                System.out.println(ILLEGAL_CODE);
+                System.err.println(e.getMessage());
             }
         }
     }

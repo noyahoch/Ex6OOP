@@ -1,8 +1,6 @@
 package main;
-
+import variable.*;
 import block.*;
-import variable.Variable;
-import variable.VariableFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,9 +13,9 @@ public class CodeReader {
 	private static ArrayList<Method> methods;
 	private static ArrayList<Variable> vars= new ArrayList<>();
 	private static ArrayList<String> methodCalls;
-	private static final String METHOD_DEC = "(void )" + Method.VALID_METHOD_NAME +
-											"\\(([\\w ,]*)\\) *\\{ *";
-	private static final String CONDITIONAL = "(if|while) *\\(([\\w |&]*)\\) *\\{ *";
+	private static final String METHOD_DEC = "(void )\\s*" + Method.VALID_METHOD_NAME +
+											"\\s*\\(([\\w ,]*)\\)\\s*\\{\\s*";
+	private static final String CONDITIONAL = "(if|while) *\\(([\\w |&-.]*)\\) *\\{ *";
 	private static final String VAR_TYPE = " *(final )?(int|double|String|char|boolean)+(.+); *";
 	private static final String END_BLOCK = " *} *";
 	private static final String RETURN = "return *;";
@@ -42,52 +40,47 @@ public class CodeReader {
 	 * @param lines
 	 * @return
 	 */
-	 static void checkCode(ArrayList<String> lines) throws Exception {
+	 static void checkCode(ArrayList<String> lines) throws ReadingCodeException {
 		 methods = new ArrayList<>();
 		 methodCalls = new ArrayList<>();
 		 currentBlock =  globalBlock;
 		 int index = -1;
-	 	for (String line : lines) {
+	 	 for (String line : lines) {
 	 		index ++;
-			try{
-				String reg = identify_line(line);
-				switch (reg) {
-					case VAR_TYPE:
-						createVars(line, currentBlock.getVariables());
-						break;
-					case METHOD_DEC:
-						currentBlock = createMethod();
-						break;
-					case CONDITIONAL:
-						currentBlock = createConditional();
-						break;
-					case END_BLOCK:
-						if (currentBlock.getParent() != null) {
-
-							if (currentBlock.isMethod() && !(lines.get(index-1).contains(RETURN_CALL))) {
-
-								throw new SyntaxException("MISSING RETURN STATEMENT");
-							}
-							currentBlock = currentBlock.getParent();
-						} else
-							throw new LogicalException("TOO MANY }");
-						break;
-					case RETURN:
-						break;
-					case VAR_ASSIGN:
-						checkAssignment(line);
-						break;
-					case METHOD_CALL:
-						methodCalls.add(line);
-						checkMethodCall();
-						break;
-					default:
-						throw new Exception("UNRECOGNIZED COMMAND IN LINE: " + lines.indexOf(line));
-				}
-			}catch(Exception e){
-				throw new IOException(e.getMessage() + " " + lines.indexOf(line) + " " + line) ;
+			String reg = identify_line(line);
+			switch (reg) {
+				case VAR_TYPE:
+					createVars(line, currentBlock.getVariables());
+					break;
+				case METHOD_DEC:
+					currentBlock = createMethod();
+					break;
+				case CONDITIONAL:
+					currentBlock = createConditional();
+					break;
+				case END_BLOCK:
+					if (currentBlock.getParent() != null) {
+						if (currentBlock.isMethod() && !(lines.get(index-1).contains(RETURN_CALL)))
+							throw new SyntaxException("MISSING RETURN STATEMENT");
+						currentBlock = currentBlock.getParent();
+					} else
+						throw new SyntaxException("TOO MANY }");
+					break;
+				case RETURN:
+					break;
+				case VAR_ASSIGN:
+					checkAssignment();
+					break;
+				case METHOD_CALL:
+					methodCalls.add(line);
+					checkMethodCall();
+					break;
+				default:
+					throw new SyntaxException("UNRECOGNIZED COMMAND IN LINE: " + lines.indexOf(line));
 			}
 		}
+		if (currentBlock != globalBlock)
+			throw new SyntaxException("SOME BLOCKS WERE NOT CLOSED");
 	}
 
 	/**
@@ -113,7 +106,7 @@ public class CodeReader {
 	 * @returns true iff succeeded creating variable objects
 	 */
 
-	private static void createVars(String line, ArrayList<Variable> toAdd) throws Exception {
+	private static void createVars(String line, ArrayList<Variable> toAdd) throws ReadingCodeException {
 		if (line.equals(";")){return;} // todo handle with empty line (args)
 		p = Pattern.compile(VAR_TYPE);
 		m = p.matcher(line);
@@ -122,39 +115,32 @@ public class CodeReader {
 		finality = (m.group(1) != null);
 		String type = m.group(2);
 		String[] assignments = m.group(3).split(",");
-		try {
-			for (String assign : assignments) {
-				Variable var = VariableFactory.createVariable(finality, type, assign.trim(), currentBlock);
-				toAdd.add(var);
-			}
-		}
-		catch (LogicalException e) {
-			throw new Exception("f");
+		for (String assign : assignments) {
+			Variable var = VariableFactory.createVariable(finality, type, assign.trim(), currentBlock);
+			//for (Variable sibling: toAdd)
+				//if(var.getName().equals(sibling.getName()) && var.getType().equals(sibling.getType()))
+				//	throw new LogicalException("CANT NAME TWO VARS WITH SAME NAME");
+			toAdd.add(var);
 		}
 	}
 
 	/**
 	 * Checks if an assignment line is valid.
-	 * @param line a String representing the assignment.
 	 * @throws IOException if the assignment is invalid.
 	 */
-	private static void checkAssignment(String line) throws IOException{
-		try{
-			m.matches();
-			Variable firstVar = currentBlock.findVar(m.group(1));
-			if (firstVar == null || !firstVar.getFinality()) // todo documentation
-				throw new LogicalException("ILLEGAL ASSIGNMENT");
-			String value;
-			Variable secondVar = currentBlock.findVar(m.group(2));
-			if (secondVar != null)
-				value = secondVar.getValue();
-			else
-				value = m.group(2);
-			if (!firstVar.setValue(value))
-				throw new IOException("MISMATCH");
-		} catch (Exception e) {
-			throw new IOException("ILLEGAL ASSIGNMENT");
-		}
+	private static void checkAssignment() throws ReadingCodeException{
+		m.matches();
+		Variable firstVar = currentBlock.findVar(m.group(1));
+		if (firstVar == null || !firstVar.getFinality()) // todo documentation
+			throw new LogicalException("ILLEGAL ASSIGNMENT");
+		String value;
+		Variable secondVar = currentBlock.findVar(m.group(2));
+		if (secondVar != null)
+			value = secondVar.getValue();
+		else
+			value = m.group(2);
+		if (!firstVar.setValue(value))
+			throw new LogicalException("MISMATCH");
 	}
 
 	/**
@@ -162,21 +148,17 @@ public class CodeReader {
 	 *
 	 * @throws IOException if line is invalid
 	 */
-	private static Block createConditional() throws LogicalException, SyntaxException {
+	private static Conditional createConditional() throws ReadingCodeException{
 		if (currentBlock==globalBlock)
 			throw new LogicalException("CANNOT DECLARE CONDITIONAL IN GLOBAL SCOPE");
-		try {
-			Block cond = new Conditional(m.group(2), currentBlock);
-			boolean valid = cond.checkValidity();
-			if (!valid)
-				throw new SyntaxException("INVALID BOOLEAN CONDITION");
-			return cond;
-		} catch (LogicalException e) {
-			throw new LogicalException("INVALID IF WHILE DECLARATION");
-		}
-		catch (SyntaxException e){
-			throw new SyntaxException("ced");
-		}
+		Conditional cond = new Conditional(m.group(2), currentBlock);
+		boolean valid = cond.checkValidity();
+		if (!valid)
+			throw new SyntaxException("INVALID BOOLEAN CONDITION");
+		return cond;
+		//} catch (LogicalException e) {
+		//	throw new LogicalException("INVALID IF WHILE DECLARATION");
+		//}
 	}
 
 	/**
@@ -185,37 +167,28 @@ public class CodeReader {
 	 *
 	 * @throws IOException if line is invalid
 	 */
-	private static Block createMethod() throws Exception {
-		try {
-			if (currentBlock.isMethod() && currentBlock.getParent() != null)
-				throw new IOException("DECLARED METHOD WITHIN METHOD");
-			String methodName = m.group(2);
-			for (Method method : methods)
-				if (method.getName().equals(methodName)) {
-					throw new IOException("METHOD OVERLOADING IS NOT SUPPORTED");
-				}
+	private static Block createMethod() throws ReadingCodeException {
+		if (currentBlock.isMethod() && currentBlock.getParent() != null)
+			throw new LogicalException("DECLARED METHOD WITHIN METHOD");
+		String methodName = m.group(2);
+		for (Method method : methods)
+			if (method.getName().equals(methodName))
+				throw new LogicalException("METHOD OVERLOADING IS NOT SUPPORTED");
 
-			ArrayList<Variable> params = new ArrayList<>();
-			String[] varDec = m.group(3).split(",");
-			for (String declaration : varDec) {
+		ArrayList<Variable> params = new ArrayList<>();
+		String[] varDec = m.group(3).split(",");
 
+		for (String declaration : varDec)
+			if (varDec.length!=1 && declaration.equals(""))
+				throw new SyntaxException();
+			else
 				createVars(declaration + ";".trim(), params);
 
-			}
+		Block createdMethod = new Method(methodName, currentBlock, params);
+		if (!createdMethod.checkValidity())
+			throw new LogicalException("INVALID METHOD DECLARATION");
 
-			Block createdMethod = new Method(methodName, currentBlock, params);
-
-			if (!createdMethod.checkValidity()) {
-
-
-				throw new IOException("INVALID METHOD DECLARATION");
-			}
-			return createdMethod;
-		} catch (Exception e) {
-
-			System.out.println(e.getMessage());
-			throw new IOException("INVALID METHOD DECLARATION");
-		}
+		return createdMethod;
 	}
 
 
@@ -225,9 +198,9 @@ public class CodeReader {
      * Reads a line of method calls and checks if the method call is correct and logical.
      * @return true iff the call is correct and logical.
      */
-    private static void checkMethodCall() throws IOException {//todo rethinking
+    private static void checkMethodCall() throws ReadingCodeException {//todo rethinking
 	    if (currentBlock.getParent()==null)
-	    	throw new IOException("CANNOT CALL METHOD GLOBALLY");
+	    	throw new LogicalException("CANNOT CALL METHOD GLOBALLY");
 		Method corresMethod;
 	    boolean isValid = true;
 	    p = Pattern.compile(METHOD_CALL);
@@ -238,9 +211,11 @@ public class CodeReader {
 		    if (corresMethod != null){
 		    	ArrayList<String> callArgs = new ArrayList<>(Arrays.asList(m.group(2).split(",")));
 			    isValid = corresMethod.checkParamValidity(callArgs);
-		    }
-		    else if (!isValid)
-			    throw new IOException("INVALID METHOD CALL");
+		    	if (!isValid)
+			    	throw new LogicalException("INVALID METHOD ARGUMENTS");
+		    } else {
+				throw new LogicalException("INVALID METHOD CALL");
+			}
 	    }
     }
 

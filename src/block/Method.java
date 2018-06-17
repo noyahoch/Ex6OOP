@@ -1,7 +1,6 @@
 package block;
 
-import variable.Variable;
-
+import variable.*;
 import java.util.ArrayList;
 import java.util.regex.*;
 

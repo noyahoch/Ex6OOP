@@ -7,7 +7,11 @@ public class SyntaxException extends ReadingCodeException {
 
 	/**
 	 * exception constructor.
-	 * @param missing_return_statement
+	 * @param s the exception message.
 	 */
-	SyntaxException(String missing_return_statement) {super(ERROR_MESSAGE);}
+	SyntaxException(String s) {super(s);}
+
+	SyntaxException(){
+		super(ERROR_MESSAGE);
+	}
 }
