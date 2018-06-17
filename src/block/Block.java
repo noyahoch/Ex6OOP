@@ -4,6 +4,9 @@ import variable.Variable;
 
 import java.util.ArrayList;
 
+/**
+ * A class representing a block of code.
+ */
 
 public abstract class Block {
 	Block parent;

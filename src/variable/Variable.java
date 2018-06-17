@@ -4,6 +4,9 @@ import block.Block;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A class representing a variable.
+ */
 public class Variable {
 	private String name;
 	private String type;

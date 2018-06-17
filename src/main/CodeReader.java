@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The main class that checks the validity of the code.
+ */
 
 public class CodeReader {
 	private static ArrayList<Method> methods;

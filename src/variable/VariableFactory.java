@@ -6,6 +6,9 @@ import block.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Creates variables
+ */
 public class VariableFactory {
 	private static final String VARIABLE_ASSIGNMENT_PATTERN = Variable.VARIABLE_PATTERN_NAME +"( *(=) " +
 			"*(\\S|\".*\"))?";

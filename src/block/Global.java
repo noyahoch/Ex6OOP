@@ -4,6 +4,10 @@ import variable.*;
 
 import java.util.ArrayList;
 
+
+/**
+ * A class representing the global block of code.
+ */
 public class Global extends Block {
 
 

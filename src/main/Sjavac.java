@@ -17,7 +17,7 @@ public class Sjavac {
     private static final String validSuffixOnce = ".*[;{}] *$";
 
     /**
-     * Creates an Arraylist of String based on the lines in the file.
+     * Creates an Arraylist of String based on the lines in the file,
      * Empty lines and comments are ignored.
      * @param file The file to check
      * @return Array list of Strings representing the lines.

@@ -5,7 +5,7 @@ import variable.*;
 import java.util.ArrayList;
 
 /**
- * a class representing a while loop or an if statement in a Sjavac file
+ * a class representing a while loop or an if statement in a Sjavac file.
  */
 public class Conditional extends Block{
 

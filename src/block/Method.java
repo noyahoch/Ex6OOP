@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.regex.*;
 
 /**
- * A class representing a method in a Sjava file.
+ * A class representing a method in a Sjava file
  */
 public class Method extends Block {
 

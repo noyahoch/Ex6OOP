@@ -5,7 +5,7 @@ public class LogicalException extends ReadingCodeException {
 	private static final String ERROR_MESSAGE = "Logical Exception";//TODO
 
 	/**
-	 * exception constructor.
+	 * exception constructor
 	 * @param s
 	 */
 	public LogicalException(String s) {super(s);}
