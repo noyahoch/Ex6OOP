@@ -3,7 +3,7 @@ package main;
 public class SyntaxException extends ReadingCodeException {
 	private static final long serialVersionUID = 1L;
 
-	private static final String ERROR_MESSAGE = "Syntax Exception";
+	private static final String ERROR_MESSAGE = "SYNTAX EXCEPTION";
 
 	/**
 	 * exception constructor.

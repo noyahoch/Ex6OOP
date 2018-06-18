@@ -10,8 +10,10 @@ import java.util.regex.*;
 public class Method extends Block {
 
     public final static String VALID_METHOD_NAME = "([A-Za-z]+[\\w]*)";
+
     private final ArrayList<Variable> params;
-    String name;
+
+    private String name;
 
     public Method(String name, Block parent, ArrayList<Variable> params ){
         this.name = name;
@@ -46,7 +48,7 @@ public class Method extends Block {
      * @param givenArgs
      * @return
      */
-    public boolean checkParamValidity(ArrayList<String> givenArgs, Block scope) { //todo rethinking
+    public boolean checkParamValidity(ArrayList<String> givenArgs, Block scope) {
 	    if (givenArgs.size() == 1 && givenArgs.get(0).equals("") && params.size()==0) {
 	    	return true;
 	    }
@@ -77,6 +79,7 @@ public class Method extends Block {
     	return null;
 	}
 
-
-
+	public ArrayList<Variable> getParams() {
+		return params;
+	}
 }

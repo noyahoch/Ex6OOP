@@ -1,18 +1,13 @@
 package block;
 
-import main.LogicalException;
-import main.ReadingCodeException;
-import main.SyntaxException;
-import variable.Variable;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.regex.Pattern;
 
 public class MethodCall extends Block {
-	String name;
-	Block parent;
-	ArrayList<String> callArgs;
+	private String name;
+
+	private Block parent;
+
+	private ArrayList<String> callArgs;
 
 	public MethodCall(String name, Block parent, ArrayList<String> callArgs) {
 		this.name = name;
@@ -27,6 +22,7 @@ public class MethodCall extends Block {
 	}
 
 
+
 	public String getName() {
 		return name;
 	}
@@ -39,4 +35,5 @@ public class MethodCall extends Block {
 	public Block getParent() {
 		return parent;
 	}
+
 }

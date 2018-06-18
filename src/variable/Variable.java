@@ -12,21 +12,27 @@ public class Variable {
 	private String type;
 	private String value;
 	private boolean finality;
+
 	public static final String VARIABLE_PATTERN_NAME = "([A-Za-z]+[\\w]*|_\\w+)";
+
 	private static final String STRING_PATTERN = "\".*\"";
+
 	private static final String INT_PATTERN = "-?\\d+";
+
 	private static final String DOUBLE_PATTERN = "-?\\d+(\\.\\d+)?";
+
 	private static final String CHAR_PATTERN = "\'(.?)\'";
+
 	private static final String BOOLEAN_PATTERN = "true|false|\\d+(\\.\\d+)?|"+DOUBLE_PATTERN;
 
 
-	public Variable(String name, String type, Block parent, boolean finality){
+	Variable(String name, String type, Block parent, boolean finality){
 		this.name = name;
 		this.type = type;
 		this.finality = finality;
 		}
 
-	public Variable(String name, String type, Block parent, boolean finality,  String value) {
+	Variable(String name, String type, Block parent, boolean finality, String value) {
 		this.name = name;
 		this.type = type;
 		this.value = value;
@@ -34,9 +40,7 @@ public class Variable {
 		setDouble();
 	}
 
-	public String getValue() {
-		return value;
-	}
+
 
 	private enum Types {
 		INT("int", INT_PATTERN),
@@ -62,7 +66,9 @@ public class Variable {
 	public boolean checkValidity() {
 		Pattern p = Pattern.compile(VARIABLE_PATTERN_NAME);
 		Matcher m = p.matcher(name);
-		if (!m.lookingAt()) return false; //checks if the name begins with char
+		if (!m.lookingAt()) {
+			return false; //checks if the name begins with char
+		}
 		if (value != null) {
 			for (Types type : Types.values()) {
 				if (type.typeName.equals(this.type)) {
@@ -72,7 +78,10 @@ public class Variable {
 				}
 			}
 			return true;
-		} else return !finality;
+
+		} else {
+			return !finality;
+		}
 	}
 
 	public boolean checkValidity (String newVal) {
@@ -85,14 +94,6 @@ public class Variable {
 		}
 		return true;
 	}
-	public boolean setValue(String value){
-		value = value.trim();
-		if (checkValidity(value)) {
-			this.value = value;
-			return true;
-			}
-			return false;
-	}
 
 	public boolean getFinality(){
 		return this.finality;
@@ -102,8 +103,16 @@ public class Variable {
 		return this.name;
 	}
 
-	public String getType(){
-		return this.type;
+	public String getValue() {
+		return this.value;
 	}
 
+	public boolean setValue(String value){
+		value = value.trim();
+		if (checkValidity(value)) {
+			this.value = value;
+			return true;
+		}
+		return false;
+	}
 }

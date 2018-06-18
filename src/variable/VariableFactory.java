@@ -13,6 +13,10 @@ public class VariableFactory {
 	private static final String VARIABLE_ASSIGNMENT_PATTERN = Variable.VARIABLE_PATTERN_NAME + "(\\s*(=)\\s*" +
 			"(.*))?";
 
+	private static final String MISMATCH_VAR_MESSAGE = "VARIABLE ASSIGNMENT DOESN'T MATCH";
+
+	private static final String ILLEGAL_VARIABLE_DEC_MESSAGE = "ILLEGAL VARIABLE DECLARATION";
+
 	public static Variable createVariable(boolean finality, String type, String assign, Block currentBlock)
 			throws LogicalException, SyntaxException {
 
@@ -20,7 +24,7 @@ public class VariableFactory {
 		Pattern p = Pattern.compile(VARIABLE_ASSIGNMENT_PATTERN);
 		Matcher m = p.matcher(assign);
 		if (!m.matches()) {
-			throw new SyntaxException("variable doesn't match");
+			throw new SyntaxException(MISMATCH_VAR_MESSAGE);
 		}
 		if (m.group(2) != null) {// if the variable has no value
 			String assignmentValue = currentBlock.valueOfVar(m.group(4));
@@ -28,11 +32,13 @@ public class VariableFactory {
 			if (assignmentValue == null) {
 				assignmentValue = m.group(4).trim();
 			}
+
 			boolean isAssigned = false;
 			if (currentBlock.isMethod()) {
-				if (((Method)currentBlock).findParam(assignmentValue) != null)
+				if (((Method) currentBlock).findParam(assignmentValue) != null) //todo what to do
 					isAssigned = true;
 			}
+
 			if (isAssigned) {
 				newVar = new Variable(m.group(1), type, currentBlock, finality);
 			} else {
@@ -41,13 +47,14 @@ public class VariableFactory {
 		} else {
 			newVar = new Variable(m.group(1), type, currentBlock, finality);
 		}
+
 		if (newVar.checkValidity()) {
-				return newVar;
-			} else {
-				throw new LogicalException("ILLEGAL VARIABLE DECLARATION");
-			}
+			return newVar;
+		} else {
+			throw new LogicalException(ILLEGAL_VARIABLE_DEC_MESSAGE);
 		}
 	}
+}
 
 
 
