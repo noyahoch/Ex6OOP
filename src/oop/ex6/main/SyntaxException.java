@@ -1,4 +1,4 @@
-package main;
+package oop.ex6.main;
 
 /**
  * A class representing a syntax error in a sjava file.

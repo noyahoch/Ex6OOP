@@ -1,4 +1,4 @@
-package main;
+package oop.ex6.main;
 
 /**
  * A class representing a logical exception in a Sjava file.

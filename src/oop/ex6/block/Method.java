@@ -1,6 +1,6 @@
-package block;
+package oop.ex6.block;
 
-import variable.*;
+import oop.ex6.variable.*;
 import java.util.ArrayList;
 import java.util.regex.*;
 
@@ -10,6 +10,7 @@ import java.util.regex.*;
 public class Method extends Block {
 
     public final static String VALID_METHOD_NAME = "([A-Za-z]+[\\w]*)";
+
     private final String DEFALUT_VALUE = "0"; // A default value, valid for each primitive type;
     private final ArrayList<Variable> params;
     private String name;

@@ -1,7 +1,6 @@
-package block;
+package oop.ex6.block;
 
-import variable.*;
-
+import oop.ex6.variable.*;
 import java.util.ArrayList;
 
 

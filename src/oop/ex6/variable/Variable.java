@@ -1,4 +1,4 @@
-package variable;
+package oop.ex6.variable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,10 +12,10 @@ public class Variable {
 	private boolean finality;
 
 	public static final String VARIABLE_PATTERN_NAME = "([A-Za-z]+[\\w]*|_\\w+)";
-	private static final String STRING_PATTERN = "\".*\"";
-	private static final String INT_PATTERN = "-?\\d+";
-	private static final String DOUBLE_PATTERN = "-?\\d+(\\.\\d+)?";
-	private static final String CHAR_PATTERN = "\'(.?)\'";
+	public static final String STRING_PATTERN = "\".*\"";
+	public static final String INT_PATTERN = "-?\\d+";
+	public static final String DOUBLE_PATTERN = "-?\\d+(\\.\\d+)?";
+	public static final String CHAR_PATTERN = "\'(.?)\'";
 	public static final String BOOLEAN_PATTERN = "true|false|\\d+(\\.\\d+)?|"+DOUBLE_PATTERN;
 
 	/**

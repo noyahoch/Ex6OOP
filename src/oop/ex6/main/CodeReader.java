@@ -1,11 +1,7 @@
-package main;
-import block.Block;
-import block.Conditional;
-import block.Global;
-import block.Method;
-import variable.Variable;
-import variable.VariableFactory;
+package oop.ex6.main;
 
+import oop.ex6.variable.*;
+import oop.ex6.block.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Matcher;

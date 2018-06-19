@@ -1,7 +1,7 @@
-package variable;
+package oop.ex6.variable;
 
-import main.*;
-import block.*;
+import oop.ex6.main.*;
+import oop.ex6.block.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,16 +18,15 @@ public class VariableFactory {
 	/**
 	 * Creates a variable according to assignment command and checks its validity.
 	 * @param finality the finality of the variable
-	 * @param type
-	 * @param assign
-	 * @param currentBlock
-	 * @return
-	 * @throws LogicalException
-	 * @throws SyntaxException
+	 * @param type the type of the variable
+	 * @param assign the assignmenr command
+	 * @param currentBlock the block in which the var is assigned
+	 * @return variable created.
+	 * @throws ReadingCodeException if var is invalid
 	 */
 
 	public static Variable createVariable(boolean finality, String type, String assign, Block currentBlock)
-			throws LogicalException, SyntaxException {
+			throws ReadingCodeException {
 
 		Variable newVar;
 		Pattern p = Pattern.compile(VARIABLE_ASSIGNMENT_PATTERN);
