@@ -298,8 +298,7 @@ public class CodeReader {
 			if (currentBlock.isMethod() && !(lines.get(index - 1).matches(RETURN)))
 				throw new SyntaxException(METHOD_WITHOUT_RETURN_MESSAGE);
 			currentBlock = currentBlock.getParent();
-		} else {
+		} else
 			throw new SyntaxException(MISMATCHING_SCOPES_ERROR);
-		}
 	}
 }
