@@ -1,7 +1,7 @@
 package main;
 
 /**
- * A class representing a reading code exception.
+ * A class representing a code reading exception.
  */
 public abstract class ReadingCodeException extends Exception {
 	private static final long serialVersionUID = 1L;
@@ -9,13 +9,16 @@ public abstract class ReadingCodeException extends Exception {
 	private static final String DEFAULT_MESSAGE = "ERROR READING THE CODE";
 
 	/**
-	 * exception constructor.
-	 * @param s message to be shown
+	 * Constructor with a specific message
+	 * @param msg the message
 	 */
-	ReadingCodeException(String s) {
-		super(s);
+	ReadingCodeException(String msg) {
+		super(msg);
 	}
 
+	/**
+	 * Default constructor.
+	 */
 	ReadingCodeException() {
 		super(DEFAULT_MESSAGE);
 	}

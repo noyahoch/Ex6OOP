@@ -1,11 +1,9 @@
 package variable;
-import block.Block;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A class representing a variable.
+ * A class representing a variable in an Sjava file.
  */
 public class Variable {
 	private String name;
@@ -14,30 +12,37 @@ public class Variable {
 	private boolean finality;
 
 	public static final String VARIABLE_PATTERN_NAME = "([A-Za-z]+[\\w]*|_\\w+)";
-
 	private static final String STRING_PATTERN = "\".*\"";
-
 	private static final String INT_PATTERN = "-?\\d+";
-
 	private static final String DOUBLE_PATTERN = "-?\\d+(\\.\\d+)?";
-
 	private static final String CHAR_PATTERN = "\'(.?)\'";
+	public static final String BOOLEAN_PATTERN = "true|false|\\d+(\\.\\d+)?|"+DOUBLE_PATTERN;
 
-	private static final String BOOLEAN_PATTERN = "true|false|\\d+(\\.\\d+)?|"+DOUBLE_PATTERN;
-
-
-	Variable(String name, String type, Block parent, boolean finality){
+	/**
+	 * Constructs a new variable.
+	 * @param name the variable's name
+	 * @param type the variable type
+	 * @param finality true iff the variable is final
+	 */
+	Variable(String name, String type, boolean finality){
 		this.name = name;
 		this.type = type;
 		this.finality = finality;
 		}
 
-	Variable(String name, String type, Block parent, boolean finality, String value) {
+	/**
+	 * Constructs a new variable
+	 * @param name the variable's name
+	 * @param type the variable type
+	 * @param finality true iff the variable is final
+	 * @param value the value of the variable.
+	 */
+	Variable(String name, String type, boolean finality, String value) {
 		this.name = name;
 		this.type = type;
 		this.value = value;
 		this.finality = finality;
-		setDouble();
+		setDouble(); // Changes the value of the variable if its double
 	}
 
 
@@ -56,58 +61,77 @@ public class Variable {
 			this.typePattern = typePattern;
 		}
 	}
+
+	/**
+	 * In case the variable is a double assigned with int, add ".0"
+	 * so it won't be considered as an int
+	 */
 	private void setDouble (){
-		if (type.equals(Types.DOUBLE.typeName)){
-			if (!this.value.contains(".")){
+		if (type.equals(Types.DOUBLE.typeName))
+			if (!this.value.contains("."))
 				this.value +=".0";
-			}
-		}
 	}
+
+	/**
+	 * Checks the validity of the variable, according to its type.
+	 * @return true iff the variable is valid.
+	 */
 	public boolean checkValidity() {
-		Pattern p = Pattern.compile(VARIABLE_PATTERN_NAME);
-		Matcher m = p.matcher(name);
-		if (!m.lookingAt()) {
-			return false; //checks if the name begins with char
-		}
-		if (value != null) {
-			for (Types type : Types.values()) {
-				if (type.typeName.equals(this.type)) {
-					p = Pattern.compile(type.typePattern);
-					m = p.matcher(value);
-					return m.matches();
-				}
-			}
-			return true;
-
-		} else {
-			return !finality;
-		}
+		//Pattern p = Pattern.compile(VARIABLE_PATTERN_NAME); TODO make sure its OK to erase
+		//Matcher m = p.matcher(name);
+		//if (!m.lookingAt()) {
+		//	return false; //checks if the name begins with char
+		//}
+		if (value != null)
+			return checkValidity(value);
+		else
+			return !finality; // Final var must be declared with a value.
 	}
 
+
+	/**
+	 * Checks the validity of a given value assigned a variable.
+	 * @param newVal the value to be assigned.
+	 * @return true iff the new value is valid
+	 */
 	public boolean checkValidity (String newVal) {
 		for (Types type : Types.values()) {
 			if (type.typeName.equals(this.type)) {
 				Pattern p = Pattern.compile(type.typePattern);
 				Matcher m = p.matcher(newVal);
-				return m.find();
+				return m.matches();
 			}
 		}
-		return true;
+		return false; // Declaration didn't match anything TODO make sure its fine with Noya
 	}
 
+	/**
+	 * @return true iff the variable is final.
+	 */
 	public boolean getFinality(){
 		return this.finality;
 	}
 
+	/**
+	 * @return the variable's name
+	 */
 	public String getName(){
 		return this.name;
 	}
 
+	/**
+	 * @return A String representation of the variable's value.
+	 */
 	public String getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(String value){
+	/**
+	 * Sets the value of the variable iff its valud
+	 * @param value the value to be assigned
+	 * @return true if the assignment was successful
+	 */
+	public boolean setValue(String value){ //TODO should throw exception?
 		value = value.trim();
 		if (checkValidity(value)) {
 			this.value = value;

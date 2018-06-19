@@ -1,43 +1,43 @@
 package block;
 
 import variable.Variable;
-
 import java.util.ArrayList;
 
 /**
- * A class representing a block of code.
+ * An abstract class representing a block of code.
  */
 
 public abstract class Block {
 
 	Block parent;
-
 	ArrayList<Variable> variables;
-
 	boolean isMethod;
 
+	/**Checks if the block is valid in sjava.
+	 * @return true iff the block is valid.
+	 */
 	abstract public boolean checkValidity();
 
+	/**
+	 * @return the block's parent block
+	 */
 	public Block getParent(){
 		return this.parent;
 	}
 
-	public void setParent(Block parent){
-		this.parent = parent;
-	}
-
+	/**
+	 * @return the list of the variables declared in the block
+	 */
 	public ArrayList<Variable> getVariables(){
 		return this.variables;
 	}
 
+	/**
+	 * @return true iff the block is a method
+	 */
 	public boolean isMethod(){
 		return this.isMethod;
 	}
-
-	public void addVariable(Variable var){
-		this.variables.add(var);
-	}
-
 
 	/**
 	 * @param name a name of a variable
@@ -46,11 +46,9 @@ public abstract class Block {
 	public Variable findVar(String name){
 		Block currentBlock = this;
 		while (currentBlock != null) {
-			for (Variable var : currentBlock.getVariables()) {
-				if (var.getName().equals(name)) {
+			for (Variable var : currentBlock.getVariables())
+				if (var.getName().equals(name))
 					return var;
-				}
-			}
 			currentBlock = currentBlock.getParent();
 		}
 		return null;
@@ -62,9 +60,8 @@ public abstract class Block {
 	 */
 	public String valueOfVar(String name) {
 		Variable var = findVar(name);
-		if (var!=null) {
+		if (var!=null)
 			return var.getValue();
-		}
 		return null;
 	}
 }

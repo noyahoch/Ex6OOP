@@ -1,8 +1,4 @@
 import main.Sjavac;
-
-// import the library - alt+enter
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import java.awt.*;
@@ -16,8 +12,13 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+// import the library - alt+enter
+
 public class Tester_ex6_oop {
-	private static Path pathToFiles = Paths.get("src", "tester_files");
+	private static Path pathToFiles = Paths.get("C:\\Users\\omrii\\IdeaProjects\\ex6\\Ex6OOP\\src", "tester_files");
 	private static Path pathToTests = Paths.get(pathToFiles.toString(), "tests");
 	private static Path pathToUserTests = Paths.get(pathToTests.toString(), "specificTests");
 	private static Path pathToOutputFile = Paths.get(pathToFiles.toString(), "user_output.txt");
