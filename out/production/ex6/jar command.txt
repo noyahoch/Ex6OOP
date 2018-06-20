@@ -1,0 +1,1 @@
+jar -cvf ex6.jar README oop/ex6/main/*.java oop/ex6/block/*.java oop/ex6/variable/*.java

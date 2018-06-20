@@ -16,7 +16,7 @@ public class Variable {
 	public static final String INT_PATTERN = "-?\\d+";
 	public static final String DOUBLE_PATTERN = "-?\\d+(\\.\\d+)?";
 	public static final String CHAR_PATTERN = "\'(.?)\'";
-	public static final String BOOLEAN_PATTERN = "true|false|\\d+(\\.\\d+)?|"+DOUBLE_PATTERN;
+	public static final String BOOLEAN_PATTERN = "true|false|"+DOUBLE_PATTERN;
 
 	/**
 	 * Constructs a new variable.

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class CodeReader {
 	private static final String METHOD_DEC = "(void\\s)\\s*" + Method.VALID_METHOD_NAME +
-			"\\s*\\(([\\w\\s,]*)\\)\\s*\\{\\s*";
+			"\\s*\\(([\\w\\s, -.'\"]*)\\)\\s*\\{\\s*";
 	private static final String CONDITIONAL = "(if|while)\\s*\\(([\\w\\s|&-.]*)\\)\\s*\\{\\s*";
 	private static final String VAR_TYPE = "\\s*(final\\s)?\\s*+(int|double|String|char|boolean)" +
 			"\\s+(.+)\\s*;\\s*";

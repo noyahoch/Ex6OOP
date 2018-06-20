@@ -47,10 +47,5 @@ OOP design:
 Regex:
     1. Boolean value regex  -"true|false|"+DOUBLE_PATTERN; it could hold "true", "false", or any valid
     double pattern (-?, digits, .?, digits).
-    2.METHOD_DEC = "(void\\s)\\s*" + Method.VALID_METHOD_NAME +	"\\s*\\(([\\w\\s, -.'\"]*)\\)\\s*\\{\\s*";
-    a method declaration hold the void keyword, then a valid method name, parenthesis, and endblock.
-    spaces are valid, and anything that can be in a var declaration (digits, letter, -, . etc.)
-     and commas.
-
-
-
+    2.METHOD_DEC = "(void\\s)\\s*" + Method.VALID_METHOD_NAME +	"\\s*\\(([\\w\\s,]*)\\)\\s*\\{\\s*";
+    a method declaration hold the void keyword, then a valid method name, parenthesis, and
